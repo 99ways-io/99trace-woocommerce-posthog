@@ -1,0 +1,56 @@
+{
+  "namespace": "ade32437-dad7-45f6-8919-68d855bb110c",
+  "vectors": [
+    {
+      "platform": "woocommerce",
+      "store": "shop.example.com",
+      "kind": "order_completed",
+      "ids": [
+        "1234"
+      ],
+      "name": "99hog:v1:woocommerce:shop.example.com:order_completed:1234",
+      "uuid": "9d853987-3d44-5113-996e-b2ca4a58cae5"
+    },
+    {
+      "platform": "woocommerce",
+      "store": "Shop.Example.com",
+      "kind": "order_refunded",
+      "ids": [
+        "1234",
+        "5678"
+      ],
+      "name": "99hog:v1:woocommerce:shop.example.com:order_refunded:1234:5678",
+      "uuid": "e7d14f82-768d-5a0d-a56e-42b5a912a8cb"
+    },
+    {
+      "platform": "shopify",
+      "store": "example.myshopify.com",
+      "kind": "order_completed",
+      "ids": [
+        "5678901234567"
+      ],
+      "name": "99hog:v1:shopify:example.myshopify.com:order_completed:5678901234567",
+      "uuid": "fc7ef098-15d4-5f0b-a391-06c8550866c2"
+    },
+    {
+      "platform": "stripe",
+      "store": "acct_1abc",
+      "kind": "order_completed",
+      "ids": [
+        "cs_test_a1b2c3"
+      ],
+      "name": "99hog:v1:stripe:acct_1abc:order_completed:cs_test_a1b2c3",
+      "uuid": "e2edaea3-2aac-5994-832a-872f073c641c"
+    },
+    {
+      "platform": "woocommerce",
+      "store": "shop.example.com",
+      "kind": "order",
+      "ids": [
+        "1234"
+      ],
+      "name": "99hog:v1:woocommerce:shop.example.com:order:1234",
+      "uuid": "22016d60-ebdb-5cbb-b6c8-32ccdd9e7c47"
+    }
+  ]
+}

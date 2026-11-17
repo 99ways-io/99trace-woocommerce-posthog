@@ -1,0 +1,842 @@
+# Copyright (C) 2026 99Ways
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: 99Trace – PostHog Analytics for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/99trace-posthog-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-17T14:27:55+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: 99trace-posthog-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: 99trace-posthog-for-woocommerce.php
+msgid "99Trace – PostHog Analytics for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: 99trace-posthog-for-woocommerce.php
+msgid "https://99trace.com"
+msgstr ""
+
+#. Description of the plugin
+#: 99trace-posthog-for-woocommerce.php
+msgid "Every WooCommerce order in PostHog, exactly once, on the visitor who placed it. Purchases, refunds and cancellations are sent by your shop's server, so bank redirects, ad blockers and in-app browsers no longer lose them; posthog-js and the server share one visitor ID."
+msgstr ""
+
+#. Author of the plugin
+#: 99trace-posthog-for-woocommerce.php
+msgid "99Ways"
+msgstr ""
+
+#. Author URI of the plugin
+#: 99trace-posthog-for-woocommerce.php
+msgid "https://99ways.io"
+msgstr ""
+
+#: src/Admin.php:41
+#: src/Privacy.php:148
+msgid "99Trace (PostHog)"
+msgstr ""
+
+#: src/Admin.php:45
+msgid "Settings"
+msgstr ""
+
+#: src/Admin.php:76
+msgid "Connect"
+msgstr ""
+
+#: src/Admin.php:77
+#: src/Admin.php:148
+#: src/Admin.php:515
+#: src/Admin.php:583
+#: src/Admin.php:637
+msgid "Consent"
+msgstr ""
+
+#: src/Admin.php:78
+msgid "Events"
+msgstr ""
+
+#: src/Admin.php:79
+#: src/Admin.php:407
+msgid "Browser features"
+msgstr ""
+
+#: src/Admin.php:80
+msgid "Visitors & orders"
+msgstr ""
+
+#: src/Admin.php:81
+msgid "Advanced"
+msgstr ""
+
+#: src/Admin.php:92
+msgid "A paid order, sent once at the moment of payment, whichever browser the buyer finishes in."
+msgstr ""
+
+#: src/Admin.php:93
+msgid "A full or partial refund of a paid order, with the refunded amount. Only for purchases PostHog received (needs Order Completed on)."
+msgstr ""
+
+#: src/Admin.php:94
+msgid "A paid order that was cancelled later (its revenue is taken back). Only for purchases PostHog received (needs Order Completed on)."
+msgstr ""
+
+#: src/Admin.php:95
+msgid "An order whose payment failed or was cancelled at the bank before it was paid."
+msgstr ""
+
+#: src/Admin.php:96
+msgid "The visitor opened the checkout with items in the cart (at most once per cart every 30 minutes)."
+msgstr ""
+
+#: src/Admin.php:97
+msgid "A product was added to the cart."
+msgstr ""
+
+#: src/Admin.php:98
+msgid "A product was removed from the cart, or its quantity lowered."
+msgstr ""
+
+#: src/Admin.php:99
+msgid "A coupon was added to the cart, with its discount."
+msgstr ""
+
+#: src/Admin.php:100
+msgid "A coupon was taken off the cart."
+msgstr ""
+
+#: src/Admin.php:101
+msgid "A product page was viewed, with the product, its price and category."
+msgstr ""
+
+#: src/Admin.php:102
+msgid "A product category page was viewed."
+msgstr ""
+
+#: src/Admin.php:103
+msgid "The cart page was viewed, with its contents."
+msgstr ""
+
+#: src/Admin.php:104
+msgid "The thank-you page was seen (once per order and browser), with how the browser was joined to the buyer."
+msgstr ""
+
+#: src/Admin.php:105
+msgid "Every page view. PostHog's web analytics, funnels and paths are built on it."
+msgstr ""
+
+#: src/Admin.php:106
+msgid "Leaving a page, with time on page and how far the visitor scrolled."
+msgstr ""
+
+#: src/Admin.php:107
+msgid "Clicks, form submissions and changes, recorded automatically."
+msgstr ""
+
+#: src/Admin.php:108
+msgid "Clicks on something that does nothing (no page change, no reaction): a sign of confusion."
+msgstr ""
+
+#: src/Admin.php:119
+msgid "Autocapture (clicks and form changes)"
+msgstr ""
+
+#: src/Admin.php:119
+msgid "Clicks, form submissions and changes, recorded automatically ($autocapture)."
+msgstr ""
+
+#: src/Admin.php:120
+msgid "Dead clicks"
+msgstr ""
+
+#: src/Admin.php:120
+msgid "Clicks on something that does nothing, a sign of confusion ($dead_click). PostHog counts a click as dead only if nothing on the page changes for 2.5 seconds after it."
+msgstr ""
+
+#: src/Admin.php:121
+msgid "Page speed (web vitals)"
+msgstr ""
+
+#: src/Admin.php:121
+msgid "How fast pages load and react, measured in visitors' browsers ($web_vitals). Overriding it never changes network timing in recordings, which follows PostHog's replay settings."
+msgstr ""
+
+#: src/Admin.php:122
+msgid "Heatmaps"
+msgstr ""
+
+#: src/Admin.php:122
+msgid "Where visitors click, move and scroll on each page."
+msgstr ""
+
+#: src/Admin.php:123
+msgid "Session replay"
+msgstr ""
+
+#: src/Admin.php:123
+msgid "Recordings of visits that you can watch in PostHog. Always off: never recorded on this shop."
+msgstr ""
+
+#: src/Admin.php:124
+msgid "Surveys"
+msgstr ""
+
+#: src/Admin.php:124
+msgid "Lets surveys made in PostHog appear on the shop."
+msgstr ""
+
+#: src/Admin.php:125
+msgid "JavaScript errors (error tracking)"
+msgstr ""
+
+#: src/Admin.php:125
+msgid "Sends errors in the shop's pages to PostHog's error tracking ($exception)."
+msgstr ""
+
+#: src/Admin.php:146
+msgid "When PostHog may record a visitor. Consent rules differ by country and by what you record, so this is your decision as the shop owner: 99Trace supports each choice and does not decide for you. The default records every visitor, which gives PostHog complete data; the other choices follow the answer visitors give your cookie banner (Cookiebot, or a plugin using the WP Consent API) for \"statistics\"."
+msgstr ""
+
+#: src/Admin.php:153
+msgid "Track every visitor: I handle consent myself"
+msgstr ""
+
+#: src/Admin.php:154
+msgid "Automatic: follow the cookie banner (Cookiebot plugin, else WP Consent API; with neither, PostHog stays off in the browser)"
+msgstr ""
+
+#: src/Admin.php:155
+msgid "Cookiebot: wait for \"statistics\" consent (also when Cookiebot is loaded by the theme or Google Tag Manager)"
+msgstr ""
+
+#: src/Admin.php:156
+msgid "WP Consent API: wait for \"statistics\" consent"
+msgstr ""
+
+#: src/Admin.php:157
+msgid "My site calls posthog.opt_in_capturing() itself"
+msgstr ""
+
+#: src/Admin.php:159
+msgid "<strong>Track every visitor</strong> (default) records everyone from the first page, never waits for a banner, and is never blocked by Cookiebot: PostHog and the shop store the visitor's ID in cookies and send events for every visitor. Choose it if you have decided that analytics needs no consent on this shop, or that you collect it another way. The other choices wait for \"statistics\" consent; what happens before the answer is set below. Cart and checkout events made before the answer are not sent."
+msgstr ""
+
+#: src/Admin.php:162
+msgid "Before the visitor answers the banner"
+msgstr ""
+
+#: src/Admin.php:167
+msgid "Wait: load PostHog only after consent (nothing before)"
+msgstr ""
+
+#: src/Admin.php:168
+msgid "Record the visit, send it when the visitor accepts"
+msgstr ""
+
+#: src/Admin.php:169
+msgid "Load PostHog switched off: experiments only (nothing recorded)"
+msgstr ""
+
+#: src/Admin.php:171
+msgid "Only with Cookiebot or the WP Consent API. <strong>Wait</strong>: PostHog starts after consent; what the visitor did before is not recorded. <strong>Record the visit</strong>: PostHog records pages and clicks in the page's memory, stores nothing in the browser and sends nothing; when the visitor accepts, all of it is sent under one visitor and PostHog runs normally from then on; on a refusal the recording is thrown away. <strong>Switched off</strong>: experiments get their variant at once and nothing is recorded; on consent the page view and the experiment exposure are sent (needs Browser features → Feature flags and experiments; without it, this works as Wait). With Record the visit and Switched off, PostHog is asked for experiment variants before consent."
+msgstr ""
+
+#: src/Admin.php:173
+msgid "Record the visit: keep it across pages until the answer"
+msgstr ""
+
+#: src/Admin.php:173
+msgid "Off: only the page where the visitor answers is sent. On: the recording of earlier pages is kept in the browser's session storage (deleted when the tab closes) and sent too. This stores data in the browser before consent: switch it on only where that is allowed."
+msgstr ""
+
+#: src/Admin.php:175
+msgid "Orders without consent"
+msgstr ""
+
+#: src/Admin.php:180
+msgid "Counted anonymously (no visitor, IP or person)"
+msgstr ""
+
+#: src/Admin.php:181
+msgid "Not sent"
+msgstr ""
+
+#: src/Admin.php:183
+msgid "An order whose buyer refused (or never answered) the banner. <strong>Counted anonymously</strong> (default): the purchase and its revenue are sent without anything that identifies the buyer, so revenue in PostHog stays complete. <strong>Not sent</strong>: PostHog does not see it. A buyer who accepts on the thank-you page before the order is sent (Wait before sending an order) gets the order linked to their visit."
+msgstr ""
+
+#: src/Admin.php:190
+msgid "Every event 99Trace sends to PostHog. Switch an event off, or give it your own name in PostHog (leave the name empty for the standard one). A renamed event is still sent exactly once; reports, funnels and destinations in PostHog that use the old name must be changed to the new one. PostHog's own automatic events can be switched off but keep their names, because PostHog's built-in reports rely on them. Browser and PostHog events need Connect → Run PostHog in the browser."
+msgstr ""
+
+#: src/Admin.php:193
+msgid "Carts the checkout page fills"
+msgstr ""
+
+#: src/Admin.php:198
+msgid "Not sent (recommended)"
+msgstr ""
+
+#: src/Admin.php:199
+msgid "Sent as Product Added"
+msgstr ""
+
+#: src/Admin.php:201
+msgid "Some checkout pages, such as FunnelKit funnels, put the product in the cart when they open. The shopper did not add it, and Checkout Started already records the visit with its products. <strong>Not sent</strong> (default): Product Added only when the shopper adds a product (a button, a link, a change on the cart or the checkout). <strong>Sent</strong>: every such page load also sends Product Added, marked <code>source: checkout_page</code>, and ad platforms fed from Product Added count it as an add to cart."
+msgstr ""
+
+#: src/Admin.php:210
+msgid "PostHog's setting (recommended)"
+msgstr ""
+
+#: src/Admin.php:212
+#: src/Admin.php:390
+msgid "Always on"
+msgstr ""
+
+#: src/Admin.php:214
+#: src/Admin.php:391
+msgid "Always off"
+msgstr ""
+
+#: src/Admin.php:221
+msgid "PostHog's setting decides whether it is on; this shop can only switch it off."
+msgstr ""
+
+#: src/Admin.php:225
+msgid "PostHog features in the visitor's browser. Most of them have a switch in the PostHog project's own settings (Settings → Project in PostHog). <strong>PostHog's setting</strong> (recommended) leaves the choice to that switch, so you change it in PostHog; <strong>Always on</strong> or <strong>Always off</strong> override it on this shop. A change in PostHog reaches pages opened after it, not a page that is already open. On order and account pages replay, heatmaps and element text are always off, because they show the buyer's name and address."
+msgstr ""
+
+#: src/Admin.php:228
+msgid "Rage clicks"
+msgstr ""
+
+#: src/Admin.php:228
+msgid "Several quick clicks on the same spot: a sign of frustration. PostHog has no switch for this one."
+msgstr ""
+
+#: src/Admin.php:229
+msgid "Feature flags and experiments"
+msgstr ""
+
+#: src/Admin.php:229
+msgid "Lets PostHog experiments and feature flags decide what a visitor sees. Off: no experiment can run on this shop."
+msgstr ""
+
+#: src/Admin.php:230
+msgid "One visitor across subdomains"
+msgstr ""
+
+#: src/Admin.php:230
+msgid "Recognise the same visitor on shop.example.com and www.example.com."
+msgstr ""
+
+#: src/Admin.php:231
+msgid "Hide all text"
+msgstr ""
+
+#: src/Admin.php:231
+msgid "Clicks and recordings never contain the text on the page, on every page (not only order and account pages)."
+msgstr ""
+
+#: src/Admin.php:238
+msgid "Not recorded (recommended)"
+msgstr ""
+
+#: src/Admin.php:239
+msgid "Recorded"
+msgstr ""
+
+#: src/Admin.php:242
+msgid "How visitors and orders appear in PostHog."
+msgstr ""
+
+#: src/Admin.php:244
+msgid "Shop staff"
+msgstr ""
+
+#: src/Admin.php:249
+msgid "Signed-in users who can manage orders: administrators and shop managers. <strong>Not recorded</strong> (default): nothing from them reaches PostHog, so no page views, recordings, experiments, carts or checkouts. A purchase they make is still counted, without their visits."
+msgstr ""
+
+#: src/Admin.php:252
+msgid "Page editors"
+msgstr ""
+
+#: src/Admin.php:257
+msgid "Signed-in users who can edit pages but not manage orders, such as editors and custom roles for building pages. Their test visits to product and checkout pages would otherwise count as shopping, also in ad platforms fed from PostHog. <strong>Not recorded</strong> (default) works as for shop staff."
+msgstr ""
+
+#: src/Admin.php:260
+msgid "Preview loads"
+msgstr ""
+
+#: src/Admin.php:265
+msgid "Pages opened in a page builder or as a preview: Elementor's editor and preview, FunnelKit's previews, WordPress page previews and the Customizer, with the calls they make while open. Only signed-in users can open them. <strong>Not recorded</strong> (default): never sent, whoever opens them."
+msgstr ""
+
+#: src/Admin.php:268
+msgid "Person profiles"
+msgstr ""
+
+#: src/Admin.php:273
+msgid "Every visitor (recommended)"
+msgstr ""
+
+#: src/Admin.php:274
+msgid "Only logged-in customers"
+msgstr ""
+
+#: src/Admin.php:276
+msgid "A person profile is the card in PostHog (People) that collects everything one visitor did: pages and clicks from the browser, and purchases and refunds from the shop's server. <strong>Every visitor</strong> gives each visitor a card, so you can open a buyer and see their whole journey. <strong>Only logged-in customers</strong> creates cards only for customers who sign in; other visitors' events are still counted but belong to no card (PostHog bills these \"anonymous\" events at a lower rate). Browser and server events always follow the same choice."
+msgstr ""
+
+#: src/Admin.php:278
+msgid "Recognise logged-in customers on every device"
+msgstr ""
+
+#: src/Admin.php:278
+msgid "A customer who signs in is joined to one person in PostHog, on every device they use. The account is named by an anonymous number, never by e-mail address or name."
+msgstr ""
+
+#: src/Admin.php:281
+msgid "One visitor ID for the browser and the shop"
+msgstr ""
+
+#: src/Admin.php:282
+msgid "Cart, coupon, checkout and order events are sent by the shop's server; page views and clicks by PostHog in the browser. With this on, both use one visitor ID, kept in a first-party cookie (<code>ph_wc_vid</code>) that the server can read: whichever side needs an ID first creates it, and the other uses the same one. So an \"add to cart\" clicked before PostHog has loaded, or by a visitor whose ad blocker stops PostHog, lands on the same person as the rest of the visit and the order, without PostHog having to merge two visitors. The cookie is written only where the visitor may be recorded (Consent). Off: cart and checkout events are sent only when PostHog's own cookie is there."
+msgstr ""
+
+#: src/Admin.php:284
+msgid "Customer details on the person"
+msgstr ""
+
+#: src/Admin.php:284
+msgid "Sets the buyer's e-mail, first and last name and phone as properties of their person in PostHog: as soon as they are typed on the checkout, when an order is paid, and when a customer signs in or creates an account. Only for visitors who may be recorded (Consent), never on an anonymous order, and never inside events or web addresses. PostHog receives them as typed; PostHog's destinations (Meta, Google Ads) hash them just before sending. Off: none of these details reach PostHog."
+msgstr ""
+
+#: src/Admin.php:285
+msgid "Join the thank-you page's browser to the buyer"
+msgstr ""
+
+#: src/Admin.php:285
+msgid "Buyers who pay in a bank app often come back in another browser (for example from Instagram to Safari). With this on, that browser continues as the same visitor, so the visit and the purchase stay on one person. Also: an order placed before the visitor answered the cookie banner is linked to them when they accept on its thank-you page, as long as it has not been sent yet."
+msgstr ""
+
+#: src/Admin.php:286
+msgid "Locate buyers by their own IP address"
+msgstr ""
+
+#: src/Admin.php:286
+msgid "Purchases are sent by the shop's server; this passes the buyer's IP address so PostHog shows the buyer's country, not the server's."
+msgstr ""
+
+#: src/Admin.php:288
+msgid "Wait before sending an order (minutes)"
+msgstr ""
+
+#: src/Admin.php:296
+msgid "A one-click upsell after payment is added to the order: waiting lets it be part of the purchase PostHog receives. The purchase keeps the time of payment. 0–120; 10 recommended."
+msgstr ""
+
+#: src/Admin.php:303
+msgid "For developers and special cases."
+msgstr ""
+
+#: src/Admin.php:305
+msgid "URL parameters never sent"
+msgstr ""
+
+#: src/Admin.php:309
+msgid "Comma-separated. These parameters are removed from every web address PostHog receives, at any depth. Order keys (wc_order_…) and e-mail addresses are always removed."
+msgstr ""
+
+#: src/Admin.php:312
+msgid "Further posthog-js options (JSON)"
+msgstr ""
+
+#. translators: %s: comma-separated list of posthog-js option names.
+#: src/Admin.php:319
+#, php-format
+msgid "Only for options that have no setting above. Any posthog-js option as a JSON object, applied on top of the Browser features. Example: {\"session_recording\": {\"maskAllInputs\": true}}. Ignored because 99Trace depends on them: %s."
+msgstr ""
+
+#: src/Admin.php:324
+msgid "Read the visitor from key"
+msgstr ""
+
+#: src/Admin.php:327
+msgid "Only while another PostHog plugin still runs PostHog in the browser and 99Trace sends from the server only (a pilot beside it): the project key whose PostHog cookie names the visitor. Empty: that plugin's key. Not used once 99Trace runs PostHog in the browser: then the visitor is always in PostHog's standard cookie for the project key above, the same cookie other PostHog plugins use, so replacing another plugin with the same project key keeps every visitor."
+msgstr ""
+
+#: src/Admin.php:329
+msgid "Debug logging"
+msgstr ""
+
+#: src/Admin.php:329
+msgid "Writes what 99Trace does to WooCommerce → Status → Logs (source 99trace), and to the browser console."
+msgstr ""
+
+#. translators: 1: PostHog host address, 2: first characters of the PostHog project key.
+#: src/Admin.php:337
+#, php-format
+msgid "Sending to %1$s, project key %2$s…"
+msgstr ""
+
+#: src/Admin.php:341
+msgid "No project key: nothing is sent."
+msgstr ""
+
+#: src/Admin.php:343
+msgid "One PostHog identity across the browser and the shop's server: pages and clicks from the browser, purchases and refunds from WooCommerce, on the same person."
+msgstr ""
+
+#: src/Admin.php:343
+msgid "Coverage report"
+msgstr ""
+
+#: src/Admin.php:345
+msgid "Mode"
+msgstr ""
+
+#: src/Admin.php:350
+msgid "Off – do nothing"
+msgstr ""
+
+#: src/Admin.php:351
+msgid "Test – capture identities and log events, send nothing"
+msgstr ""
+
+#: src/Admin.php:352
+msgid "On – send"
+msgstr ""
+
+#: src/Admin.php:354
+msgid "<strong>Off</strong>: 99Trace does nothing. <strong>Test</strong>: 99Trace works out every event without sending it: the shop's events go to the log (Advanced → Debug logging), and PostHog runs in the browser so you can check it, but records nothing (with Debug logging, the browser console shows each event it would have sent). <strong>On</strong>: events are sent to PostHog."
+msgstr ""
+
+#: src/Admin.php:357
+msgid "Project API key"
+msgstr ""
+
+#: src/Admin.php:360
+msgid "The project key (starts with phc_) of the PostHog project to send to: PostHog → Settings → Project → Project API key. Browser and server events go to the same project."
+msgstr ""
+
+#: src/Admin.php:363
+msgid "PostHog host"
+msgstr ""
+
+#: src/Admin.php:367
+msgid "https://eu.i.posthog.com for PostHog EU Cloud, https://us.i.posthog.com for US Cloud."
+msgstr ""
+
+#: src/Admin.php:369
+msgid "Run PostHog in the browser"
+msgstr ""
+
+#: src/Admin.php:369
+msgid "Loads PostHog in visitors' browsers (pages, clicks, experiments). Off: only the shop's server sends events. Deactivate any other PostHog plugin first: two PostHog copies on one page split every visitor in two."
+msgstr ""
+
+#: src/Admin.php:371
+msgid "Browser host (proxy)"
+msgstr ""
+
+#: src/Admin.php:374
+msgid "Optional. Your own address that forwards to PostHog, e.g. https://ph.example.com, so ad blockers do not block PostHog. Empty: the PostHog host."
+msgstr ""
+
+#: src/Admin.php:384
+msgid "Shop server (WooCommerce)"
+msgstr ""
+
+#: src/Admin.php:385
+msgid "Browser (99Trace)"
+msgstr ""
+
+#: src/Admin.php:386
+msgid "PostHog automatic"
+msgstr ""
+
+#: src/Admin.php:389
+msgid "PostHog's setting"
+msgstr ""
+
+#: src/Admin.php:396
+msgid "Event"
+msgstr ""
+
+#: src/Admin.php:397
+msgid "Sent from"
+msgstr ""
+
+#: src/Admin.php:398
+msgid "On"
+msgstr ""
+
+#: src/Admin.php:399
+msgid "Name in PostHog"
+msgstr ""
+
+#: src/Admin.php:400
+msgid "What it is"
+msgstr ""
+
+#. translators: %s: event name, such as "Order Completed".
+#: src/Admin.php:414
+#, php-format
+msgid "%s on"
+msgstr ""
+
+#. translators: %s: comma-separated list of event names.
+#: src/Admin.php:442
+#, php-format
+msgid "These names were not saved, so the standard name is used: %s. A name may not start with \"$\", be longer than 100 characters, or be the name of another event."
+msgstr ""
+
+#: src/Admin.php:464
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: src/Admin.php:479
+msgid "99Trace has stopped sending to PostHog."
+msgstr ""
+
+#. translators: 1: the site address sending was switched on for, 2: this site's address.
+#: src/Admin.php:483
+#, php-format
+msgid "Sending was switched on for %1$s, and this site is %2$s: a copy of the shop must not send into the live project. On a copy, set the mode to Off or Test, or enter a test project's key. If this is the live shop at a new address:"
+msgstr ""
+
+#: src/Admin.php:490
+msgid "Send from this address"
+msgstr ""
+
+#: src/Admin.php:499
+msgid "\"Further posthog-js options\" is not a JSON object, so none of it is applied."
+msgstr ""
+
+#: src/Admin.php:505
+msgid "Cookiebot"
+msgstr ""
+
+#: src/Admin.php:506
+msgid "a consent plugin (WP Consent API)"
+msgstr ""
+
+#. translators: 1: name of the consent platform, 2: link to the Consent settings.
+#: src/Admin.php:513
+#, php-format
+msgid "99Trace tracks every visitor (Consent: Track every visitor), and this site also runs %1$s. If PostHog should wait for the visitor's \"statistics\" answer, choose it under %2$s. Which one is right is your decision."
+msgstr ""
+
+#: src/Admin.php:524
+msgid "PostHog does not run in the browser: Consent is set to Automatic and no consent platform was found (Cookiebot plugin, WP Consent API). If your banner is added by the theme or Google Tag Manager, choose it under Consent; choose \"Track every visitor\" only where no consent is needed."
+msgstr ""
+
+#. translators: %s: plugin file of the other PostHog plugin.
+#: src/Admin.php:534
+#, php-format
+msgid "PostHog does not run in the browser while another PostHog plugin is active (%s): two posthog-js instances on one page split visitors and double-count. Deactivate it to use the browser module; server events continue."
+msgstr ""
+
+#: src/Admin.php:557
+msgid "PostHog (99Trace)"
+msgstr ""
+
+#: src/Admin.php:576
+#: src/Admin.php:636
+msgid "Identity"
+msgstr ""
+
+#. translators: %s: why the order is not linked to a visitor, such as "consent_refused".
+#: src/Admin.php:579
+#, php-format
+msgid "not linked (%s)"
+msgstr ""
+
+#: src/Admin.php:580
+msgid "Distinct ID"
+msgstr ""
+
+#: src/Admin.php:581
+msgid "Visitor"
+msgstr ""
+
+#: src/Admin.php:582
+msgid "Session"
+msgstr ""
+
+#: src/Admin.php:584
+msgid "Captured"
+msgstr ""
+
+#. translators: 1: time the order was linked, 2: how it was recorded before.
+#: src/Admin.php:588
+msgid "Linked later"
+msgstr ""
+
+#. translators: 1: time the order was linked, 2: how it was recorded before.
+#: src/Admin.php:588
+#, php-format
+msgid "%1$s (was %2$s)"
+msgstr ""
+
+#. translators: %d: refund ID.
+#: src/Admin.php:600
+#, php-format
+msgid "Refund #%d"
+msgstr ""
+
+#. translators: %s: date and time the order was sent.
+#: src/Admin.php:611
+#, php-format
+msgid "sent %s"
+msgstr ""
+
+#: src/Admin.php:635
+msgid "Status"
+msgstr ""
+
+#: src/Admin.php:638
+msgid "Payment method"
+msgstr ""
+
+#: src/Admin.php:648
+msgid "sent (0.2.x)"
+msgstr ""
+
+#: src/Admin.php:648
+msgid "not queued"
+msgstr ""
+
+#. translators: %d: number of days.
+#: src/Admin.php:660
+#, php-format
+msgid "99Trace coverage, paid web orders in the last %d day"
+msgid_plural "99Trace coverage, paid web orders in the last %d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of orders.
+#: src/Admin.php:666
+#, php-format
+msgid "%d order."
+msgid_plural "%d orders."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin.php:669
+msgid "Experiment conversion metrics only see linked purchases: compare the linked share between arms before reading a result."
+msgstr ""
+
+#: src/Orders.php:138
+msgid "PostHog identity of the visitor placing the order (99Trace)."
+msgstr ""
+
+#: src/Plugin.php:64
+msgid "99Trace is waiting."
+msgstr ""
+
+#: src/Plugin.php:65
+msgid "99Hog for WooCommerce, the plugin 99Trace replaces, is still active, and both would send every event. Deactivate 99Hog: 99Trace then starts with its settings, its delivery state and its visitors."
+msgstr ""
+
+#: src/Plugin.php:67
+msgid "Go to Plugins"
+msgstr ""
+
+#: src/Privacy.php:43
+msgid "99Trace sends data about visits and orders to PostHog, the analytics service you connected. This suggestion follows your current 99Trace settings: check it again when you change them, add how long your PostHog project keeps data, and say so if you pass PostHog data on to advertising platforms (PostHog destinations)."
+msgstr ""
+
+#: src/Privacy.php:44
+msgid "Suggested text:"
+msgstr ""
+
+#: src/Privacy.php:44
+msgid "We use PostHog, a product analytics service, to understand how visitors use our shop and to count our orders correctly."
+msgstr ""
+
+#: src/Privacy.php:47
+msgid "After you accept statistics cookies, PostHog runs in your browser and records the pages you view, the buttons and links you click, how far you scroll, and technical details such as your browser, device and screen size. It keeps an anonymous visitor ID in cookies whose names start with ph_, so that your visits can be recognised."
+msgstr ""
+
+#: src/Privacy.php:48
+msgid "PostHog runs in your browser and records the pages you view, the buttons and links you click, how far you scroll, and technical details such as your browser, device and screen size. It keeps an anonymous visitor ID in cookies whose names start with ph_, so that your visits can be recognised."
+msgstr ""
+
+#: src/Privacy.php:50
+msgid "Our shop's server sends PostHog what happens to your cart and your orders: products added or removed, coupons, the start of the checkout, and orders that are paid, refunded or cancelled, with their products, amounts and payment method, under the same anonymous visitor ID."
+msgstr ""
+
+#: src/Privacy.php:51
+msgid "These events include your IP address, which PostHog uses to estimate your country and city."
+msgstr ""
+
+#: src/Privacy.php:53
+msgid "If you did not accept statistics cookies, a paid order is counted without your visitor ID, IP address or any other detail that identifies you."
+msgstr ""
+
+#: src/Privacy.php:56
+msgid "If you are signed in to your account, your visits on different devices are joined using an anonymous account number, never your e-mail address."
+msgstr ""
+
+#: src/Privacy.php:60
+msgid "If you accepted statistics cookies, the e-mail address, name and phone number you enter at checkout or in your account are stored on your visitor profile in PostHog."
+msgstr ""
+
+#: src/Privacy.php:61
+msgid "The e-mail address, name and phone number you enter at checkout or in your account are stored on your visitor profile in PostHog."
+msgstr ""
+
+#: src/Privacy.php:64
+msgid "PostHog stores this data in the European Union."
+msgstr ""
+
+#: src/Privacy.php:65
+msgid "PostHog may store this data in the United States."
+msgstr ""
+
+#. translators: %s: link to PostHog's privacy policy.
+#: src/Privacy.php:68
+#, php-format
+msgid "PostHog's privacy policy: %s"
+msgstr ""
+
+#: src/Privacy.php:124
+msgid "99Trace (PostHog) order data"
+msgstr ""
+
+#: src/Privacy.php:139
+msgid "PostHog distinct ID"
+msgstr ""
+
+#: src/Privacy.php:140
+msgid "PostHog device ID"
+msgstr ""
+
+#: src/Privacy.php:141
+msgid "PostHog session ID"
+msgstr ""
+
+#: src/Privacy.php:142
+msgid "Analytics consent at checkout"
+msgstr ""
+
+#: src/Privacy.php:143
+msgid "IP address (location in PostHog)"
+msgstr ""
+
+#: src/Privacy.php:144
+msgid "Browser (user agent)"
+msgstr ""

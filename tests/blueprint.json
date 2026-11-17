@@ -1,0 +1,30 @@
+{
+  "preferredVersions": {
+    "php": "8.4",
+    "wp": "latest"
+  },
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "activatePlugin",
+      "pluginPath": "99trace-posthog-for-woocommerce/99trace-posthog-for-woocommerce.php"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; wc_get_container()->get(Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\DataSynchronizer::class)->create_database_tables(); update_option('woocommerce_custom_orders_table_enabled','yes'); update_option('woocommerce_custom_orders_table_data_sync_enabled','no');"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/tests/tests.php';"
+    }
+  ]
+}

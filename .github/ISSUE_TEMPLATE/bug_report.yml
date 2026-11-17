@@ -1,0 +1,33 @@
+name: Bug report
+description: Something 99Trace sends, or fails to send, differs from what WooCommerce recorded.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for reporting. Please remove personal data (names, e-mail addresses, order keys, project keys) from everything you paste.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What PostHog received, and what you expected from WooCommerce's records.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce
+      description: Checkout type (block, classic, FunnelKit…), payment method, consent setting, and the steps.
+    validations:
+      required: true
+  - type: textarea
+    id: box
+    attributes:
+      label: The 99Trace box on the affected order
+      description: Copy the rows of the "PostHog (99Trace)" box from the order screen, and any related lines from WooCommerce → Status → Logs (source 99trace) with Debug logging on.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: 99Trace 1.0.0, WooCommerce 11.3, WordPress 7.1, PHP 8.3
+    validations:
+      required: true

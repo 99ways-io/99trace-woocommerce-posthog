@@ -1,0 +1,29 @@
+name: WordPress.org readme and assets
+
+# Updates the plugin page (readme.txt, icon, banners, screenshots) without a release, for example after
+# testing a new WordPress version. Runs only once the repository variable WPORG_DEPLOY is "true".
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '99trace-posthog-for-woocommerce/readme.txt'
+      - '.wordpress-org/**'
+
+permissions:
+  contents: read
+
+jobs:
+  assets:
+    if: ${{ vars.WPORG_DEPLOY == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: 10up/action-wordpress-plugin-asset-update@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: 99trace-posthog-for-woocommerce
+          README_NAME: readme.txt
+          ASSETS_DIR: .wordpress-org
+          BUILD_DIR: 99trace-posthog-for-woocommerce

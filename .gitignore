@@ -1,0 +1,11 @@
+tests/results.txt
+node_modules/
+.DS_Store
+staging/.env
+staging/tests/node_modules/
+staging/tests/test-results/
+staging/tests/playwright-report/
+staging/tests/store.local.json
+staging/tests/results/
+dist/
+.wrangler/

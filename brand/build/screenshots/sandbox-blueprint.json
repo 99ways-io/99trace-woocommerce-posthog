@@ -1,0 +1,52 @@
+{
+  "landingPage": "/wp-admin/admin.php?page=wc-settings&tab=99trace",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "steps": [
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/sandbox-autologin.php",
+      "data": "<?php\n// Sandbox only: signs the visitor in as the Playground admin when ?autologin=1 is in the URL.\nadd_action( 'init', function () {\n\tif ( isset( $_GET['autologin'] ) && ! is_user_logged_in() ) {\n\t\t$user = get_user_by( 'login', 'admin' );\n\t\tif ( $user ) {\n\t\t\twp_set_current_user( $user->ID );\n\t\t\twp_set_auth_cookie( $user->ID, true );\n\t\t\twp_safe_redirect( remove_query_arg( 'autologin' ) );\n\t\t\texit;\n\t\t}\n\t}\n} );\n"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/sandbox-posthog-sink.php",
+      "data": "<?php\n// Sandbox only: answers every request to PostHog's hosts locally and keeps what would have been sent.\nadd_filter( 'pre_http_request', function ( $pre, $args, $url ) {\n\t$host = (string) wp_parse_url( $url, PHP_URL_HOST );\n\tif ( false === strpos( $host, 'posthog.com' ) || false !== strpos( $host, '-assets.' ) ) {\n\t\treturn $pre;\n\t}\n\t$body = json_decode( (string) ( $args['body'] ?? '' ), true );\n\t$log  = get_option( 'sandbox_posthog_sink', array() );\n\tforeach ( (array) ( $body['batch'] ?? array() ) as $e ) {\n\t\t$log[] = array( 'event' => $e['event'] ?? '', 'distinct_id' => $e['distinct_id'] ?? '', 'uuid' => $e['uuid'] ?? '', 'timestamp' => $e['timestamp'] ?? '', 'identity_source' => $e['properties']['identity_source'] ?? '', 'order_id' => $e['properties']['order_id'] ?? '', 'revenue' => $e['properties']['revenue'] ?? '', 'lib' => $e['properties']['$lib'] ?? '' );\n\t}\n\tupdate_option( 'sandbox_posthog_sink', array_slice( $log, -200 ), false );\n\treturn array( 'headers' => array(), 'body' => '{\"status\":1}', 'response' => array( 'code' => 200, 'message' => 'OK' ), 'cookies' => array(), 'filename' => null );\n}, 10, 3 );\n"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/sandbox-posthog-proxy.php",
+      "data": "<?php\n// Sandbox only: a local stand-in for PostHog's browser endpoints at /ingest (PostHog's documented reverse-proxy\n// layout). posthog-js itself is fetched once from PostHog's public asset host; flags answer empty; events are kept.\nadd_action( 'plugins_loaded', function () {\n\t$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';\n\tif ( 0 !== strpos( $uri, '/ingest/' ) ) {\n\t\treturn;\n\t}\n\t$path = (string) strtok( substr( $uri, strlen( '/ingest' ) ), '?' );\n\tif ( 0 === strpos( $path, '/static/' ) && preg_match( '#^/static/[A-Za-z0-9._-]+$#', $path ) ) {\n\t\t$file = WP_CONTENT_DIR . '/uploads/posthog-static' . $path;\n\t\tif ( ! file_exists( $file ) ) {\n\t\t\twp_mkdir_p( dirname( $file ) );\n\t\t\t$r = wp_remote_get( 'https://eu-assets.i.posthog.com' . $path, array( 'timeout' => 30 ) );\n\t\t\tif ( is_wp_error( $r ) || 200 !== wp_remote_retrieve_response_code( $r ) ) {\n\t\t\t\tstatus_header( 404 );\n\t\t\t\texit;\n\t\t\t}\n\t\t\tfile_put_contents( $file, wp_remote_retrieve_body( $r ) );\n\t\t}\n\t\theader( 'Content-Type: application/javascript' );\n\t\treadfile( $file );\n\t\texit;\n\t}\n\theader( 'Content-Type: application/json' );\n\theader( 'Access-Control-Allow-Origin: *' );\n\tif ( false !== strpos( $path, 'flags' ) || false !== strpos( $path, 'decide' ) ) {\n\t\techo '{\"featureFlags\":{},\"featureFlagPayloads\":{},\"errorsWhileComputingFlags\":false,\"flags\":{}}';\n\t\texit;\n\t}\n\t$log   = get_option( 'sandbox_browser_sink', array() );\n\t$log[] = array( 'path' => $path, 'bytes' => strlen( (string) file_get_contents( 'php://input' ) ), 'at' => gmdate( 'H:i:s' ) );\n\tupdate_option( 'sandbox_browser_sink', array_slice( $log, -300 ), false );\n\techo '{\"status\":1}';\n\texit;\n}, 0 );\n"
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "plugin-check"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "activatePlugin",
+      "pluginPath": "99trace-posthog-for-woocommerce/99trace-posthog-for-woocommerce.php"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; update_option('woocommerce_onboarding_profile', array('skipped' => true)); update_option('woocommerce_task_list_hidden', 'yes'); update_option('woocommerce_task_list_complete', 'yes'); update_option('woocommerce_show_marketplace_suggestions', 'no'); update_option('woocommerce_allow_tracking', 'no'); update_option('woocommerce_coming_soon', 'no'); update_option('blogname', 'Hedgerow Supply Co.'); update_option('woocommerce_currency', 'EUR'); update_option('woocommerce_default_country', 'NL'); update_option('woocommerce_store_city', 'Amsterdam');\n\nforeach ( array( array( 'Linen apron', '34.00' ), array( 'Stoneware mug', '18.50' ), array( 'Garden twine', '7.90' ) ) as $p ) {\n\t$prod = new WC_Product_Simple(); $prod->set_name( $p[0] ); $prod->set_regular_price( $p[1] ); $prod->set_virtual( true ); $prod->set_status( 'publish' ); $prod->save();\n}\nupdate_option( 'woocommerce_bacs_settings', array( 'enabled' => 'yes', 'title' => 'Direct bank transfer' ) );\nupdate_option( 'woocommerce_cheque_settings', array( 'enabled' => 'yes', 'title' => 'Check payments' ) );\nupdate_option( 'woocommerce_cod_settings', array( 'enabled' => 'yes', 'title' => 'Cash on delivery', 'enable_for_virtual' => 'yes' ) );\nforeach ( array( 'mode' => 'on', 'key' => 'phc_sandboxProjectKey0000000000000000000000', 'host' => 'https://eu.i.posthog.com', 'delay_minutes' => '0', 'consent' => 'none', 'browser' => 'yes', 'browser_host' => 'http://127.0.0.1:4401/ingest', 'debug' => 'yes' ) as $k => $v ) {\n\tupdate_option( 'w99_phwc_' . $k, $v );\n}\n"
+    }
+  ]
+}

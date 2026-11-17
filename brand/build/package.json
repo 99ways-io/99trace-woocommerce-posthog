@@ -1,0 +1,13 @@
+{
+  "name": "99trace-brand-build",
+  "private": true,
+  "description": "Rebuilds 99Trace's logo, icon, banners and social image. See ../README.md.",
+  "scripts": {
+    "build": "sh build.sh"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.1.1",
+    "@fontsource/inter": "5.1.1",
+    "@resvg/resvg-js": "2.6.2"
+  }
+}

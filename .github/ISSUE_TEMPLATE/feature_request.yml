@@ -1,0 +1,20 @@
+name: Feature request
+description: A measurement problem 99Trace could solve.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you cannot measure, or measure wrongly, today, and what it costs you.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would solve it
+  - type: textarea
+    id: context
+    attributes:
+      label: Your setup
+      description: Checkout, payment methods, consent tool, other analytics plugins.
