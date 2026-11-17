@@ -1,0 +1,5 @@
+# Short links that stay valid across releases.
+/download https://github.com/99ways-io/99trace-woocommerce-posthog/releases/latest 302
+/github https://github.com/99ways-io/99trace-woocommerce-posthog 302
+/changelog https://github.com/99ways-io/99trace-woocommerce-posthog/blob/main/CHANGELOG.md 302
+/security https://github.com/99ways-io/99trace-woocommerce-posthog/security/policy 302

@@ -123,7 +123,7 @@ Pull requests also run [Plugin Check](https://wordpress.org/plugins/plugin-check
 | `tests/` | Unit tests and WordPress Playground checks |
 | `docs/` | Design, properties and developer hooks |
 | `brand/` | Logo, icon, colours and the build that regenerates them |
-| `website/` | [99trace.com](https://99trace.com): the page, its build and the Cloudflare Worker that serves it |
+| `website/` | [99trace.com](https://99trace.com): the page, its build and its Cloudflare deployment (`cf deploy`) |
 | `.wordpress-org/` | Icon, banners and screenshots for the plugin directory |
 | `bin/` | Release build |
 

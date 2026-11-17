@@ -1,0 +1,10 @@
+{
+  "name": "99trace-site",
+  "private": true,
+  "description": "99trace.com, deployed with the cf CLI (cf deploy).",
+  "devDependencies": {
+    "cf": "0.15.0",
+    "wrangler": "4.162.0"
+  },
+  "type": "module"
+}

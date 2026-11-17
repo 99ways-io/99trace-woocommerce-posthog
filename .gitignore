@@ -9,3 +9,4 @@ staging/tests/store.local.json
 staging/tests/results/
 dist/
 .wrangler/
+.cloudflare/
