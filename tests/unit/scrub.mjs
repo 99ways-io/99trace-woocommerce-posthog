@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
-const src = readFileSync(new URL('../../99trace-posthog-for-woocommerce/assets/js/99trace.js', import.meta.url), 'utf8');
+const src = readFileSync(new URL('../../99trace-integration-with-posthog-for-woocommerce/assets/js/99trace.js', import.meta.url), 'utf8');
 const cfg = { token: 'phc_test', consent: 'cookiebot', stripParams: ['key', 'order_key', 'wfocu-key', '_wpnonce', 'token', 'email', 'billing_email', 'phone'] };
 const window = {
   w99phwc: cfg,

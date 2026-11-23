@@ -2,10 +2,10 @@
 /**
  * Settings, stored as `w99_phwc_*` options (the 0.2.x names are kept, new ones added).
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -390,14 +390,14 @@ final class Settings {
 
 	/** Another active PostHog plugin (plugin file), or ''. */
 	public static function other_posthog_plugin(): string {
-		if ( ! function_exists( 'get_option' ) || ! defined( 'W99_TRACE_FILE' ) ) {
+		if ( ! function_exists( 'get_option' ) || ! defined( 'W99_PHWC_TRACE_FILE' ) ) {
 			return '';
 		}
 		$plugins = (array) get_option( 'active_plugins', array() );
 		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 			$plugins = array_merge( $plugins, array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) ) );
 		}
-		$own = dirname( plugin_basename( W99_TRACE_FILE ) );
+		$own = dirname( plugin_basename( W99_PHWC_TRACE_FILE ) );
 		foreach ( $plugins as $plugin ) {
 			$plugin = (string) $plugin;
 			if ( false !== stripos( $plugin, 'posthog' ) && dirname( $plugin ) !== $own ) {

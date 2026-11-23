@@ -1,10 +1,10 @@
-=== 99Trace – PostHog Analytics for WooCommerce ===
+=== 99Trace: Easy Integration with PostHog for WooCommerce ===
 Contributors: 99ways
 Tags: posthog, woocommerce, analytics, server-side tracking, ab testing
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,13 +152,17 @@ Bugs and ideas: [GitHub issues](https://github.com/99ways-io/99trace-woocommerce
 
 == Changelog ==
 
+= 1.1.1 =
+* Changed: the plugin is now called "99Trace: Easy Integration with PostHog for WooCommerce" (folder and text domain `99trace-integration-with-posthog-for-woocommerce`). Settings, order data and visitor IDs are unchanged.
+* Changed: request data (cookies, browser headers, form fields) is sanitized as it is read. Events, orders and settings behave as before.
+
 = 1.1.0 =
 * New: every product in an event carries everything WooCommerce shows about it: its attributes (such as the bundle or colour bought), the variation's own address, all categories, tags and brands, the shipping class, prices, stock status and dimensions. Fields sent before are unchanged.
 * New: Events → Product custom fields sends product custom fields too, the visible ones or all of them. Off by default; WooCommerce's own cost of goods is sent only with "all". None of it is ever printed into pages.
 
 = 1.0.0 =
 * First public release. 99Trace was piloted on live shops under the name "99Hog for WooCommerce" (0.2 to 0.6).
-* New: translation-ready (text domain `99trace-posthog-for-woocommerce`).
+* New: translation-ready (text domain `99trace-integration-with-posthog-for-woocommerce`).
 * New: a suggested privacy policy text under Settings → Privacy → Policy Guide, following your settings.
 * New: uninstalling removes 99Trace's settings and scheduled tasks. Order data stays with the orders, so a reinstall never sends an order twice.
 * New: while 99Hog for WooCommerce is still active, 99Trace waits and shows how to switch.
@@ -167,6 +171,9 @@ Bugs and ideas: [GitHub issues](https://github.com/99ways-io/99trace-woocommerce
 * Fixed: the coverage report now counts orders that a gateway marks paid without a payment date, such as cash on delivery. 99Trace already sent their purchases.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+New name and stricter cleaning of request data. Tracking is unchanged.
 
 = 1.1.0 =
 Products in events now carry their attributes, categories, prices, stock status and the rest of their public WooCommerce data. Custom fields stay off unless you choose them.

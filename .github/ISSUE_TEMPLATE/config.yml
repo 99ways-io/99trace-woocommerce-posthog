@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/99ways-io/99trace-woocommerce-posthog/security/advisories/new
     about: Please report security issues privately, never in a public issue.
   - name: Ask a question on WordPress.org
-    url: https://wordpress.org/support/plugin/99trace-posthog-for-woocommerce/
+    url: https://wordpress.org/support/plugin/99trace-integration-with-posthog-for-woocommerce/
     about: Questions about setting up 99Trace on your shop.

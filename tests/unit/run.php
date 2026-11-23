@@ -4,15 +4,15 @@
  * Run: php tests/unit/run.php   (PHP 8.0+)
  */
 define( 'W99_TRACE_TESTS', true );
-define( 'W99_TRACE_VERSION', 'test' );
-$src = dirname( __DIR__, 2 ) . '/99trace-posthog-for-woocommerce/src/';
+define( 'W99_PHWC_TRACE_VERSION', 'test' );
+$src = dirname( __DIR__, 2 ) . '/99trace-integration-with-posthog-for-woocommerce/src/';
 // The plugin's files stop unless WordPress loaded them (ABSPATH); here they are loaded with that guard lifted.
 // Events.php and Orders.php need WordPress for most methods; their pure rules are tested on their own.
 foreach ( array( 'Util', 'Uuid', 'Consent', 'Identity', 'Settings', 'Visitor', 'Events', 'Orders' ) as $c ) {
 	eval( '?>' . str_replace( "defined( 'ABSPATH' ) || exit;", "defined( 'ABSPATH' ) || defined( 'W99_TRACE_TESTS' ) || exit;", file_get_contents( $src . $c . '.php' ) ) ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- test harness only.
 }
 
-use W99\Trace\{Util, Uuid, Consent, Identity, Events, Orders, Visitor};
+use W99Phwc\{Util, Uuid, Consent, Identity, Events, Orders, Visitor};
 
 $pass = 0;
 $fail = 0;

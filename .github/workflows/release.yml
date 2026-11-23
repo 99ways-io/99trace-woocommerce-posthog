@@ -1,6 +1,6 @@
 name: Release
 
-# Push a tag such as v1.0.1 after updating the version in 99trace-posthog-for-woocommerce/99trace-posthog-for-woocommerce.php, W99_TRACE_VERSION,
+# Push a tag such as v1.0.1 after updating the version in 99trace-integration-with-posthog-for-woocommerce/99trace-integration-with-posthog-for-woocommerce.php, W99_PHWC_TRACE_VERSION,
 # readme.txt (Stable tag and changelog) and CHANGELOG.md. The zip is attached to a GitHub release, and,
 # once the repository variable WPORG_DEPLOY is "true" and the SVN_USERNAME / SVN_PASSWORD secrets are set,
 # the same files are committed to the WordPress.org plugin directory.
@@ -20,7 +20,7 @@ jobs:
 
       - name: The tag matches the plugin version
         run: |
-          version=$(sed -n 's/^ \* Version: *//p' 99trace-posthog-for-woocommerce/99trace-posthog-for-woocommerce.php | tr -d ' \r')
+          version=$(sed -n 's/^ \* Version: *//p' 99trace-integration-with-posthog-for-woocommerce/99trace-integration-with-posthog-for-woocommerce.php | tr -d ' \r')
           test "v$version" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME does not match the plugin version $version"; exit 1; }
 
       - name: Build the zip
@@ -43,6 +43,6 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SLUG: 99trace-posthog-for-woocommerce
-          BUILD_DIR: 99trace-posthog-for-woocommerce
+          SLUG: 99trace-integration-with-posthog-for-woocommerce
+          BUILD_DIR: 99trace-integration-with-posthog-for-woocommerce
           ASSETS_DIR: .wordpress-org

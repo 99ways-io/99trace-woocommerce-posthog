@@ -2,10 +2,10 @@
 /**
  * Wiring.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,8 +20,8 @@ final class Plugin {
 
 	public static function declare_compatibility(): void {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', W99_TRACE_FILE, true );
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', W99_TRACE_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', W99_PHWC_TRACE_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', W99_PHWC_TRACE_FILE, true );
 		}
 	}
 
@@ -61,10 +61,10 @@ final class Plugin {
 		}
 		printf(
 			'<div class="notice notice-warning"><p><strong>%1$s</strong> %2$s <a href="%3$s">%4$s</a></p></div>',
-			esc_html__( '99Trace is waiting.', '99trace-posthog-for-woocommerce' ),
-			esc_html__( '99Hog for WooCommerce, the plugin 99Trace replaces, is still active, and both would send every event. Deactivate 99Hog: 99Trace then starts with its settings, its delivery state and its visitors.', '99trace-posthog-for-woocommerce' ),
+			esc_html__( '99Trace is waiting.', '99trace-integration-with-posthog-for-woocommerce' ),
+			esc_html__( '99Hog for WooCommerce, the plugin 99Trace replaces, is still active, and both would send every event. Deactivate 99Hog: 99Trace then starts with its settings, its delivery state and its visitors.', '99trace-integration-with-posthog-for-woocommerce' ),
 			esc_url( admin_url( 'plugins.php' ) ),
-			esc_html__( 'Go to Plugins', '99trace-posthog-for-woocommerce' )
+			esc_html__( 'Go to Plugins', '99trace-integration-with-posthog-for-woocommerce' )
 		);
 	}
 
@@ -72,7 +72,7 @@ final class Plugin {
 	private static function upgrade(): void {
 		$installed = (string) get_option( Settings::PREFIX . 'version', '' );
 		self::keep_consent_defaults( $installed );
-		if ( W99_TRACE_VERSION === $installed ) {
+		if ( W99_PHWC_TRACE_VERSION === $installed ) {
 			return;
 		}
 		Settings::normalize_features(); // 0.4.0's browser-feature tick boxes become the choices they meant
@@ -92,7 +92,7 @@ final class Plugin {
 		if ( 'on' === Settings::mode() ) {
 			Settings::arm();
 		}
-		update_option( Settings::PREFIX . 'version', W99_TRACE_VERSION );
+		update_option( Settings::PREFIX . 'version', W99_PHWC_TRACE_VERSION );
 	}
 
 	/**

@@ -104,7 +104,7 @@ Every setting explains itself on its page.
 
 ## Privacy
 
-99Trace sends data only to the PostHog project you configure, and only once you set the mode to On. It never sends postal addresses or order keys, never uses an e-mail address as an ID, and removes order keys and e-mail addresses from every URL. Customer details on the person (e-mail, name, phone) are optional and only for visitors who may be recorded. WordPress's privacy tools export and erase what 99Trace keeps on orders. What is sent, and when, is listed in the [readme's External services section](99trace-posthog-for-woocommerce/readme.txt).
+99Trace sends data only to the PostHog project you configure, and only once you set the mode to On. It never sends postal addresses or order keys, never uses an e-mail address as an ID, and removes order keys and e-mail addresses from every URL. Customer details on the person (e-mail, name, phone) are optional and only for visitors who may be recorded. WordPress's privacy tools export and erase what 99Trace keeps on orders. What is sent, and when, is listed in the [readme's External services section](99trace-integration-with-posthog-for-woocommerce/readme.txt).
 
 ## Development
 
@@ -112,14 +112,14 @@ Every setting explains itself on its page.
 php tests/unit/run.php                                  # PHP unit tests (no WordPress needed)
 for t in tests/unit/*.mjs; do node "$t"; done           # browser module unit tests
 tests/run.sh                                            # 200+ checks on a throwaway WordPress + WooCommerce (Playground)
-bin/build-zip.sh                                        # dist/99trace-posthog-for-woocommerce-<version>.zip, as WordPress.org receives it
+bin/build-zip.sh                                        # dist/99trace-integration-with-posthog-for-woocommerce-<version>.zip, as WordPress.org receives it
 ```
 
 Pull requests also run [Plugin Check](https://wordpress.org/plugins/plugin-check/), the WordPress.org review tool, on every change. Release 1.0.0 passes all of its categories with no errors or warnings.
 
 | Path | What it holds |
 | --- | --- |
-| `99trace-posthog-for-woocommerce/` | The plugin, exactly as it ships |
+| `99trace-integration-with-posthog-for-woocommerce/` | The plugin, exactly as it ships |
 | `tests/` | Unit tests and WordPress Playground checks |
 | `docs/` | Design, properties and developer hooks |
 | `brand/` | Logo, icon, colours and the build that regenerates them |

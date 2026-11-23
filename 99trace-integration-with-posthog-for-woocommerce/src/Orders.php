@@ -16,10 +16,10 @@
  * Every hook here runs inside WooCommerce's checkout, payment and status code: a failure is
  * logged and swallowed, never passed on to the shop (the hourly sweep recovers missed work).
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -75,8 +75,8 @@ final class Orders {
 	/* ----------------------------------------------------------------- capture */
 
 	public function capture_classic( $order, $data = array() ): void {
-		// WooCommerce verified the checkout nonce before creating the order.
-		$raw = isset( $_POST[ self::FIELD ] ) ? wp_unslash( $_POST[ self::FIELD ] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- WooCommerce verified its checkout nonce before creating the order; JSON from posthog-js, validated field by field in Identity::from_browser().
+		$raw = isset( $_POST[ self::FIELD ] ) ? wp_unslash( $_POST[ self::FIELD ] ) : null;
 		if ( $order instanceof \WC_Order ) {
 			$this->capture( $order, is_string( $raw ) ? $raw : null );
 		}
@@ -135,7 +135,7 @@ final class Orders {
 					'namespace'       => self::STORE_API,
 					'schema_callback' => static fn() => array(
 						'identity' => array(
-							'description' => __( 'PostHog identity of the visitor placing the order (99Trace).', '99trace-posthog-for-woocommerce' ),
+							'description' => __( 'PostHog identity of the visitor placing the order (99Trace).', '99trace-integration-with-posthog-for-woocommerce' ),
 							'type'        => array( 'string', 'null' ),
 							'context'     => array(),
 						),
@@ -158,7 +158,7 @@ final class Orders {
 		}
 		try {
 			$now      = time();
-			$cookies  = $_COOKIE; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- parsed and validated by Identity/Consent.
+			$cookies  = Util::request_cookies();
 			$ckey     = Settings::cookie_key();
 			$cookie   = '' !== $ckey ? Identity::from_cookie( Util::cookie( $cookies, Identity::cookie_name( $ckey ) ), $now ) : null;
 			$browser  = ( null !== $browser_raw && '' !== $browser_raw ) ? Identity::from_browser( $browser_raw, Settings::token() ) : null;
@@ -199,7 +199,7 @@ final class Orders {
 				'shop_cookie'  => null !== $shop,
 				'customer'     => $customer,
 				'ip'           => Util::public_ip( (string) ( $order->get_customer_ip_address() ?: ( class_exists( 'WC_Geolocation' ) ? \WC_Geolocation::get_ip_address() : '' ) ) ),
-				'user_agent'   => substr( (string) ( $order->get_customer_user_agent() ?: ( $_SERVER['HTTP_USER_AGENT'] ?? '' ) ), 0, 500 ), // phpcs:ignore
+				'user_agent'   => substr( (string) ( $order->get_customer_user_agent() ?: ( isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '' ) ), 0, 500 ),
 				'current_url'  => Util::strip_url( $referer, Settings::strip_params() ),
 				'cookie_key'   => '' !== $ckey ? substr( $ckey, 0, 12 ) : '',
 			);

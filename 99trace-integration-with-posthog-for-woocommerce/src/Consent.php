@@ -8,10 +8,10 @@
  * posthog-js stored an identity, consent is "implied": on a site where a banner gates posthog-js,
  * its cookie can only exist after consent.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -94,6 +94,7 @@ final class Consent {
 
 	/** The WP Consent API's cookie prefix (filter `wp_consent_cookie_prefix`, default `wp_consent`). */
 	public static function wp_consent_prefix(): string {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- the WP Consent API's own filter.
 		$prefix = function_exists( 'apply_filters' ) ? apply_filters( 'wp_consent_cookie_prefix', 'wp_consent' ) : 'wp_consent';
 		return is_string( $prefix ) && '' !== $prefix ? $prefix : 'wp_consent';
 	}

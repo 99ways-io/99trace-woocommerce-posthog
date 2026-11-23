@@ -8,10 +8,10 @@
  * revenue = amount charged, products[], products_string, …) so existing insights keep working;
  * additions are documented in docs/properties.md.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -77,7 +77,7 @@ final class Events {
 			'consent'         => $identity['consent'] ?? 'unknown',
 			'schema_version'  => self::SCHEMA_VERSION,
 			'$lib'            => '99trace',
-			'$lib_version'    => W99_TRACE_VERSION,
+			'$lib_version'    => W99_PHWC_TRACE_VERSION,
 		);
 
 		if ( $linked && ! empty( $identity['device_id'] ) ) {

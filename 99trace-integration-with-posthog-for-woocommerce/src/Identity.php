@@ -12,10 +12,10 @@
  *  3. the shop's visitor-ID cookie (Visitor), when neither exists yet: the ID the browser module or
  *     the server created before posthog-js had stored one, which posthog-js starts with.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -91,6 +91,7 @@ final class Identity {
 		// Meta click ID: posthog-js 1.447 stores {value, delivered}; older versions a plain string.
 		$fbc = $data['$fbc_persistence'] ?? null;
 		$fbc = is_array( $fbc ) ? ( $fbc['value'] ?? null ) : $fbc;
+		$fbc = is_string( $fbc ) && function_exists( 'sanitize_text_field' ) ? sanitize_text_field( $fbc ) : $fbc;
 		if ( is_string( $fbc ) && '' !== $fbc ) {
 			$props['$fbc'] = substr( $fbc, 0, 300 );
 		}

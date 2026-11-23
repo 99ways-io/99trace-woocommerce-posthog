@@ -24,10 +24,10 @@
  *
  * Nothing is stored on the server: the ID lives in cookies, the link on the order.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -70,7 +70,7 @@ final class Visitor {
 		if ( ! self::enabled() ) {
 			return null;
 		}
-		$vid = self::parse( Util::cookie( $_COOKIE, self::COOKIE ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- validated by parse().
+		$vid = self::parse( Util::cookie( Util::request_cookies(), self::COOKIE ) );
 		return null === $vid ? null : self::identity_for( $vid['id'] );
 	}
 
@@ -80,7 +80,7 @@ final class Visitor {
 	 * preview or script following an "add to cart" link (as in 0.4.0, nothing is sent for those).
 	 */
 	public static function mint(): ?array {
-		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? (string) wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- only matched against a pattern.
+		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 		if ( ! self::enabled() || headers_sent() || Util::is_bot( $ua ) ) {
 			return null;
 		}
@@ -143,7 +143,7 @@ final class Visitor {
 		if ( '' === $ckey ) {
 			return null;
 		}
-		$cookies = $_COOKIE; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- parsed and validated by Identity, Consent and parse().
+		$cookies = Util::request_cookies();
 		$ph      = Identity::from_cookie( Util::cookie( $cookies, Identity::cookie_name( $ckey ) ), time() );
 		$shop    = self::from_cookie();
 		// The shop's own cookie is no evidence of consent (it outlives the consent platform's record).
@@ -173,7 +173,15 @@ final class Visitor {
 		$linked = false;
 		try {
 			nocache_headers();
-			$linked = self::link_request( wp_unslash( $_POST ), $_COOKIE ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput -- the order key is the proof; every field is validated there.
+			// phpcs:disable WordPress.Security.NonceVerification.Missing -- called by logged-out visitors from cached thank-you pages, where a nonce would have expired: the order key is the proof.
+			$request = array(
+				'order_id' => isset( $_POST['order_id'] ) ? absint( wp_unslash( $_POST['order_id'] ) ) : 0,
+				'key'      => isset( $_POST['key'] ) && is_string( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '',
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON from posthog-js, validated field by field in Identity::from_browser().
+				'identity' => isset( $_POST['identity'] ) && is_string( $_POST['identity'] ) ? wp_unslash( $_POST['identity'] ) : null,
+			);
+			// phpcs:enable WordPress.Security.NonceVerification.Missing
+			$linked = self::link_request( $request, Util::request_cookies() );
 		} catch ( \Throwable $e ) {
 			Plugin::log( 'error', 'Linking an order after consent failed: ' . $e->getMessage() );
 		}

@@ -16,7 +16,7 @@
     },
     {
       "step": "activatePlugin",
-      "pluginPath": "99trace-posthog-for-woocommerce/99trace-posthog-for-woocommerce.php"
+      "pluginPath": "99trace-integration-with-posthog-for-woocommerce/99trace-integration-with-posthog-for-woocommerce.php"
     },
     {
       "step": "runPHP",

@@ -18,10 +18,10 @@
  *   every request. Outside a shopper's request (cron, CLI, admin) there is no response to hand over
  *   first, so they are sent at once.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 

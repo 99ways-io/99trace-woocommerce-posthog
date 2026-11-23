@@ -7,8 +7,8 @@ Status: proposed with the 1.0.0 release, for 99Ways' approval. The 99Ways kit go
 ## Name
 
 - Write **99Trace**: one word, capital T. In running text: "99Trace", never "99trace", "99 Trace" or "99TRACE".
-- The WordPress.org slug, plugin folder and text domain are `99trace-posthog-for-woocommerce`. Short identifiers (the settings tab, the log source, `$lib`) are `99trace`. The public repository is `99ways-io/99trace-woocommerce-posthog`, and the website is [99trace.com](https://99trace.com) (`website/`).
-- With a descriptor: **99Trace – PostHog Analytics for WooCommerce** (WordPress.org title). The distinctive name always comes first, and a platform's name appears only as "for WooCommerce" or "for PostHog"; never "WooTrace", "PostHog Trace" or similar, which Woo's and PostHog's trademark rules forbid.
+- The WordPress.org slug, plugin folder and text domain are `99trace-integration-with-posthog-for-woocommerce`. Short identifiers (the settings tab, the log source, `$lib`) are `99trace`. The public repository is `99ways-io/99trace-woocommerce-posthog`, and the website is [99trace.com](https://99trace.com) (`website/`).
+- With a descriptor: **99Trace: Easy Integration with PostHog for WooCommerce** (WordPress.org title). The distinctive name always comes first, and a platform's name appears only after a connecting word: "with PostHog", "for WooCommerce". WordPress.org's upload page accepts "WooCommerce" only at the very end, as "for WooCommerce" (its trademark check, 23 Nov 2026), and its 21 Nov 2026 review asked for a connector before "PostHog"; never "WooTrace", "PostHog Trace" or similar, which Woo's and PostHog's trademark rules forbid.
 - Mention once per page that 99Trace is not affiliated with PostHog Inc. or with WooCommerce and Automattic.
 
 ## Logo
@@ -64,6 +64,6 @@ Plain, exact and calm, as in the plugin's settings: say what happens, when, and 
 ```sh
 npx @wp-playground/cli@3.1.65 server --port=4401 --login \
   --blueprint=brand/build/screenshots/sandbox-blueprint.json \
-  --mount=99trace-posthog-for-woocommerce:/wordpress/wp-content/plugins/99trace-posthog-for-woocommerce
+  --mount=99trace-integration-with-posthog-for-woocommerce:/wordpress/wp-content/plugins/99trace-integration-with-posthog-for-woocommerce
 node brand/build/screenshots/screenshots.mjs <folder with playwright installed> .wordpress-org
 ```

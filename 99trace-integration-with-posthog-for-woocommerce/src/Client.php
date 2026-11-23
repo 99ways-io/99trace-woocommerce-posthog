@@ -3,10 +3,10 @@
  * PostHog capture over the WordPress HTTP API (`/batch/`), so the site's proxy, SSL and timeout
  * settings apply. In test mode it logs what it would send and sends nothing.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -41,7 +41,7 @@ final class Client {
 				'headers'     => array( 'Content-Type' => 'application/json' ),
 				'body'        => wp_json_encode( $body ),
 				'data_format' => 'body',
-				'user-agent'  => '99trace/' . W99_TRACE_VERSION,
+				'user-agent'  => '99trace/' . W99_PHWC_TRACE_VERSION,
 			)
 		);
 		if ( is_wp_error( $response ) ) {

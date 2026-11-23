@@ -6,10 +6,10 @@
  * personal parts and keeps what exactly-once delivery needs (state, UUIDs, the pseudonymous IDs).
  * Data already in PostHog is erased there (delete the person).
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,32 +40,32 @@ final class Privacy {
 		$consent  = 'none' !== Settings::consent_mode();
 		$browser  = Settings::on( 'browser' );
 		$parts    = array();
-		$parts[]  = '<p class="privacy-policy-tutorial">' . esc_html__( '99Trace sends data about visits and orders to PostHog, the analytics service you connected. This suggestion follows your current 99Trace settings: check it again when you change them, add how long your PostHog project keeps data, and say so if you pass PostHog data on to advertising platforms (PostHog destinations).', '99trace-posthog-for-woocommerce' ) . '</p>';
-		$parts[]  = '<p><strong class="privacy-policy-tutorial">' . esc_html__( 'Suggested text:', '99trace-posthog-for-woocommerce' ) . ' </strong>' . esc_html__( 'We use PostHog, a product analytics service, to understand how visitors use our shop and to count our orders correctly.', '99trace-posthog-for-woocommerce' ) . '</p>';
+		$parts[]  = '<p class="privacy-policy-tutorial">' . esc_html__( '99Trace sends data about visits and orders to PostHog, the analytics service you connected. This suggestion follows your current 99Trace settings: check it again when you change them, add how long your PostHog project keeps data, and say so if you pass PostHog data on to advertising platforms (PostHog destinations).', '99trace-integration-with-posthog-for-woocommerce' ) . '</p>';
+		$parts[]  = '<p><strong class="privacy-policy-tutorial">' . esc_html__( 'Suggested text:', '99trace-integration-with-posthog-for-woocommerce' ) . ' </strong>' . esc_html__( 'We use PostHog, a product analytics service, to understand how visitors use our shop and to count our orders correctly.', '99trace-integration-with-posthog-for-woocommerce' ) . '</p>';
 		if ( $browser ) {
 			$parts[] = '<p>' . ( $consent
-				? esc_html__( 'After you accept statistics cookies, PostHog runs in your browser and records the pages you view, the buttons and links you click, how far you scroll, and technical details such as your browser, device and screen size. It keeps an anonymous visitor ID in cookies whose names start with ph_, so that your visits can be recognised.', '99trace-posthog-for-woocommerce' )
-				: esc_html__( 'PostHog runs in your browser and records the pages you view, the buttons and links you click, how far you scroll, and technical details such as your browser, device and screen size. It keeps an anonymous visitor ID in cookies whose names start with ph_, so that your visits can be recognised.', '99trace-posthog-for-woocommerce' ) ) . '</p>';
+				? esc_html__( 'After you accept statistics cookies, PostHog runs in your browser and records the pages you view, the buttons and links you click, how far you scroll, and technical details such as your browser, device and screen size. It keeps an anonymous visitor ID in cookies whose names start with ph_, so that your visits can be recognised.', '99trace-integration-with-posthog-for-woocommerce' )
+				: esc_html__( 'PostHog runs in your browser and records the pages you view, the buttons and links you click, how far you scroll, and technical details such as your browser, device and screen size. It keeps an anonymous visitor ID in cookies whose names start with ph_, so that your visits can be recognised.', '99trace-integration-with-posthog-for-woocommerce' ) ) . '</p>';
 		}
-		$parts[] = '<p>' . esc_html__( 'Our shop\'s server sends PostHog what happens to your cart and your orders: products added or removed, coupons, the start of the checkout, and orders that are paid, refunded or cancelled, with their products, amounts and payment method, under the same anonymous visitor ID.', '99trace-posthog-for-woocommerce' )
-			. ( Settings::on( 'send_ip' ) ? ' ' . esc_html__( 'These events include your IP address, which PostHog uses to estimate your country and city.', '99trace-posthog-for-woocommerce' ) : '' ) . '</p>';
+		$parts[] = '<p>' . esc_html__( 'Our shop\'s server sends PostHog what happens to your cart and your orders: products added or removed, coupons, the start of the checkout, and orders that are paid, refunded or cancelled, with their products, amounts and payment method, under the same anonymous visitor ID.', '99trace-integration-with-posthog-for-woocommerce' )
+			. ( Settings::on( 'send_ip' ) ? ' ' . esc_html__( 'These events include your IP address, which PostHog uses to estimate your country and city.', '99trace-integration-with-posthog-for-woocommerce' ) : '' ) . '</p>';
 		if ( $consent && 'anonymous' === Settings::get( 'unconsented_orders' ) ) {
-			$parts[] = '<p>' . esc_html__( 'If you did not accept statistics cookies, a paid order is counted without your visitor ID, IP address or any other detail that identifies you.', '99trace-posthog-for-woocommerce' ) . '</p>';
+			$parts[] = '<p>' . esc_html__( 'If you did not accept statistics cookies, a paid order is counted without your visitor ID, IP address or any other detail that identifies you.', '99trace-integration-with-posthog-for-woocommerce' ) . '</p>';
 		}
 		if ( $browser && Settings::on( 'identify_customers' ) ) {
-			$parts[] = '<p>' . esc_html__( 'If you are signed in to your account, your visits on different devices are joined using an anonymous account number, never your e-mail address.', '99trace-posthog-for-woocommerce' ) . '</p>';
+			$parts[] = '<p>' . esc_html__( 'If you are signed in to your account, your visits on different devices are joined using an anonymous account number, never your e-mail address.', '99trace-integration-with-posthog-for-woocommerce' ) . '</p>';
 		}
 		if ( Settings::on( 'person_details' ) ) {
 			$parts[] = '<p>' . ( $consent
-				? esc_html__( 'If you accepted statistics cookies, the e-mail address, name and phone number you enter at checkout or in your account are stored on your visitor profile in PostHog.', '99trace-posthog-for-woocommerce' )
-				: esc_html__( 'The e-mail address, name and phone number you enter at checkout or in your account are stored on your visitor profile in PostHog.', '99trace-posthog-for-woocommerce' ) ) . '</p>';
+				? esc_html__( 'If you accepted statistics cookies, the e-mail address, name and phone number you enter at checkout or in your account are stored on your visitor profile in PostHog.', '99trace-integration-with-posthog-for-woocommerce' )
+				: esc_html__( 'The e-mail address, name and phone number you enter at checkout or in your account are stored on your visitor profile in PostHog.', '99trace-integration-with-posthog-for-woocommerce' ) ) . '</p>';
 		}
 		$parts[] = '<p>' . ( false !== strpos( Settings::host(), 'eu.' )
-			? esc_html__( 'PostHog stores this data in the European Union.', '99trace-posthog-for-woocommerce' )
-			: esc_html__( 'PostHog may store this data in the United States.', '99trace-posthog-for-woocommerce' ) )
+			? esc_html__( 'PostHog stores this data in the European Union.', '99trace-integration-with-posthog-for-woocommerce' )
+			: esc_html__( 'PostHog may store this data in the United States.', '99trace-integration-with-posthog-for-woocommerce' ) )
 			. ' ' . sprintf(
 				/* translators: %s: link to PostHog's privacy policy. */
-				esc_html__( 'PostHog\'s privacy policy: %s', '99trace-posthog-for-woocommerce' ),
+				esc_html__( 'PostHog\'s privacy policy: %s', '99trace-integration-with-posthog-for-woocommerce' ),
 				'<a href="https://posthog.com/privacy">https://posthog.com/privacy</a>'
 			) . '</p>';
 		wp_add_privacy_policy_content( '99Trace', wp_kses_post( implode( '', $parts ) ) );
@@ -121,7 +121,7 @@ final class Privacy {
 	public function exporters( $exporters ) {
 		$exporters = is_array( $exporters ) ? $exporters : array();
 		$exporters['w99-phwc'] = array(
-			'exporter_friendly_name' => __( '99Trace (PostHog) order data', '99trace-posthog-for-woocommerce' ),
+			'exporter_friendly_name' => __( '99Trace (PostHog) order data', '99trace-integration-with-posthog-for-woocommerce' ),
 			'callback'               => array( $this, 'export' ),
 		);
 		return $exporters;
@@ -136,16 +136,16 @@ final class Privacy {
 				$id    = Orders::identity( $order );
 				$ctx   = Orders::state( $order, Orders::META_CAPTURE );
 				$items = array(
-					array( 'name' => __( 'PostHog distinct ID', '99trace-posthog-for-woocommerce' ), 'value' => ! empty( $id['linked'] ) ? (string) $id['distinct_id'] : '' ),
-					array( 'name' => __( 'PostHog device ID', '99trace-posthog-for-woocommerce' ), 'value' => (string) ( $id['device_id'] ?? '' ) ),
-					array( 'name' => __( 'PostHog session ID', '99trace-posthog-for-woocommerce' ), 'value' => (string) ( $id['session_id'] ?? '' ) ),
-					array( 'name' => __( 'Analytics consent at checkout', '99trace-posthog-for-woocommerce' ), 'value' => (string) ( $id['consent'] ?? '' ) ),
-					array( 'name' => __( 'IP address (location in PostHog)', '99trace-posthog-for-woocommerce' ), 'value' => (string) ( $ctx['ip'] ?? '' ) ),
-					array( 'name' => __( 'Browser (user agent)', '99trace-posthog-for-woocommerce' ), 'value' => (string) ( $ctx['user_agent'] ?? '' ) ),
+					array( 'name' => __( 'PostHog distinct ID', '99trace-integration-with-posthog-for-woocommerce' ), 'value' => ! empty( $id['linked'] ) ? (string) $id['distinct_id'] : '' ),
+					array( 'name' => __( 'PostHog device ID', '99trace-integration-with-posthog-for-woocommerce' ), 'value' => (string) ( $id['device_id'] ?? '' ) ),
+					array( 'name' => __( 'PostHog session ID', '99trace-integration-with-posthog-for-woocommerce' ), 'value' => (string) ( $id['session_id'] ?? '' ) ),
+					array( 'name' => __( 'Analytics consent at checkout', '99trace-integration-with-posthog-for-woocommerce' ), 'value' => (string) ( $id['consent'] ?? '' ) ),
+					array( 'name' => __( 'IP address (location in PostHog)', '99trace-integration-with-posthog-for-woocommerce' ), 'value' => (string) ( $ctx['ip'] ?? '' ) ),
+					array( 'name' => __( 'Browser (user agent)', '99trace-integration-with-posthog-for-woocommerce' ), 'value' => (string) ( $ctx['user_agent'] ?? '' ) ),
 				);
 				$items = array_values( array_filter( $items, static fn( $i ) => '' !== $i['value'] ) );
 				if ( $items ) {
-					$data[] = array( 'group_id' => 'w99-phwc', 'group_label' => __( '99Trace (PostHog)', '99trace-posthog-for-woocommerce' ), 'item_id' => 'w99-phwc-order-' . $order->get_id(), 'data' => $items );
+					$data[] = array( 'group_id' => 'w99-phwc', 'group_label' => __( '99Trace (PostHog)', '99trace-integration-with-posthog-for-woocommerce' ), 'item_id' => 'w99-phwc-order-' . $order->get_id(), 'data' => $items );
 				}
 			}
 		} catch ( \Throwable $e ) {

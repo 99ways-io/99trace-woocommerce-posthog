@@ -3,10 +3,10 @@
  * Small pure helpers: UTC time, money, hosts, URLs, IPs, user agents. No WordPress calls
  * except where noted, so they can be tested with plain PHP.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -107,6 +107,10 @@ final class Util {
 		}
 		$value = trim( $value );
 		if ( '' === $value || strlen( $value ) > 200 || preg_match( '/[\x00-\x1F\x7F]/', $value ) ) {
+			return null;
+		}
+		// An ID that text sanitizing would change (tags, encoded characters, runs of spaces) is no posthog-js ID.
+		if ( function_exists( 'sanitize_text_field' ) && sanitize_text_field( $value ) !== $value ) {
 			return null;
 		}
 		// posthog-js cookieless placeholder and PostHog's illegal merge IDs are not identities.
@@ -285,13 +289,34 @@ final class Util {
 		return (bool) preg_match( '~bot[/;]|\(bot|bot\.(?:htm|php)|crawl|spider|slurp|headless|lighthouse|facebookexternal|facebookcatalog|meta-externalagent|prerender|preview|screaming frog|sitebulb|uptime|pingdom|monitor|yandex|baidu|slackbot|whatsapp|telegrambot|discordbot|semrush|ahrefs|gptbot|chatgpt|perplexity|bytespider|curl/|wget/|python-|aiohttp|go-http-client|java/|okhttp|axios/|node-fetch|scrapy|phantomjs|cypress~', $ua );
 	}
 
-	/** Read a cookie value as PHP exposes it ($_COOKIE turns dots and spaces in names into underscores). */
+	/**
+	 * This request's cookies, unslashed: the plugin's only read of $_COOKIE.
+	 *
+	 * The values are not text-sanitized here: posthog-js and Cookiebot keep JSON in their cookies, at
+	 * times URL-encoded, and sanitize_text_field() removes every %xx sequence, which would destroy them.
+	 * Every value is decoded and then validated or sanitized where it is used: Identity::from_cookie()
+	 * (distinct and session IDs through clean_id(), the Meta click ID through sanitize_text_field()),
+	 * Consent (only fixed values are accepted) and Visitor::parse() (a UUID pattern).
+	 *
+	 * @return array<string, string>
+	 */
+	public static function request_cookies(): array {
+		$cookies = array();
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated or sanitized after decoding, where each value is used (see above).
+		foreach ( wp_unslash( $_COOKIE ) as $name => $value ) {
+			if ( is_string( $value ) ) {
+				$cookies[ (string) $name ] = $value;
+			}
+		}
+		return $cookies;
+	}
+
+	/** Read a cookie value from request_cookies() (PHP turns dots and spaces in cookie names into underscores). */
 	public static function cookie( array $cookies, string $name ): ?string {
 		$key = str_replace( array( '.', ' ' ), '_', $name );
 		if ( ! isset( $cookies[ $key ] ) || ! is_string( $cookies[ $key ] ) ) {
 			return null;
 		}
-		$value = $cookies[ $key ];
-		return function_exists( 'wp_unslash' ) ? wp_unslash( $value ) : stripslashes( $value );
+		return $cookies[ $key ];
 	}
 }

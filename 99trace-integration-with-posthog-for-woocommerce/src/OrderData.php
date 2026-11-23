@@ -3,10 +3,10 @@
  * WooCommerce orders, refunds and cart lines as plain arrays. All times are true UTC
  * (getTimestamp(), never WC_DateTime::date()).
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 

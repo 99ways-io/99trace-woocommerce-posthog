@@ -6,10 +6,10 @@
  * checkout or person events. A purchase such a user makes is still sent, without their visits
  * (the identity captured at checkout stays empty), as for staff since 0.2.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 

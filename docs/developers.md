@@ -32,7 +32,7 @@ Hooks, constants and stored names, for shops and agencies that adapt 99Trace wit
 | Constant | Where | Effect |
 | --- | --- | --- |
 | `W99_TRACE_MODE` | `wp-config.php` | Forces the mode: `off`, `test` or `on`. Useful on staging copies. 99Hog's `W99_PHWC_MODE` is read when it is not set. |
-| `W99_TRACE_VERSION`, `W99_TRACE_FILE`, `W99_TRACE_DIR` | defined by the plugin | Version, main file and folder. |
+| `W99_PHWC_TRACE_VERSION`, `W99_PHWC_TRACE_FILE`, `W99_PHWC_TRACE_DIR` | defined by the plugin | Version, main file and folder. |
 
 ## Stored names
 

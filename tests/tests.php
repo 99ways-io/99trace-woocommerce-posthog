@@ -12,7 +12,7 @@
  */
 require_once '/wordpress/wp-load.php';
 
-use W99\Trace\{Queue, Storefront, Orders, Visitor, Identity, Consent};
+use W99Phwc\{Queue, Storefront, Orders, Visitor, Identity, Consent};
 
 $results = [];
 $fail    = 0;
@@ -34,14 +34,14 @@ update_option( 'phi_api_key', PROD_KEY );
 update_option( 'w99_phwc_key', SEND_KEY );
 update_option( 'w99_phwc_host', 'https://test.example' );
 update_option( 'w99_phwc_delay_minutes', '10' );
-\W99\Trace\Settings::flush();
+\W99Phwc\Settings::flush();
 
 // A new install (0.5.0): every visitor tracked, orders without consent counted, one visitor ID for browser and server.
-check( 'new install defaults: track every visitor, count unconsented orders, one visitor ID', 'none' === \W99\Trace\Settings::consent_mode() && 'anonymous' === \W99\Trace\Settings::get( 'unconsented_orders' ) && \W99\Trace\Settings::on( 'visitor_cookie' ) );
+check( 'new install defaults: track every visitor, count unconsented orders, one visitor ID', 'none' === \W99Phwc\Settings::consent_mode() && 'anonymous' === \W99Phwc\Settings::get( 'unconsented_orders' ) && \W99Phwc\Settings::on( 'visitor_cookie' ) );
 // Sections 1-20 check the consent-following behaviour 0.4.0 shipped with; 21 checks 0.5.0's one visitor ID.
 update_option( 'w99_phwc_consent', 'auto' );
 update_option( 'w99_phwc_unconsented_orders', 'skip' );
-\W99\Trace\Settings::flush();
+\W99Phwc\Settings::flush();
 
 $GLOBALS['sent']        = [];
 $GLOBALS['http_fail']   = false;
@@ -60,7 +60,7 @@ add_filter(
 );
 function set_opt( $k, $v ) {
 	update_option( 'w99_phwc_' . $k, $v );
-	\W99\Trace\Settings::flush();
+	\W99Phwc\Settings::flush();
 }
 
 check( 'HPOS order tables on, as on the production shops', 'yes' === get_option( 'woocommerce_custom_orders_table_enabled' ) && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() );
@@ -445,14 +445,14 @@ $a = last_event( 'Product Added' );
 check( 'cart: Product Added from the cart hook', $a && $before_a + 1 === count_of( 'Product Added' ) && 2 === $a['properties']['quantity'] && 'TP-1' === $a['properties']['sku'] && '0197-visitor-abc' === $a['distinct_id'], 'before ' . $before_a . ' now ' . count_of( 'Product Added' ) . ' ' . wp_json_encode( $a ? array( $a['distinct_id'], $a['properties']['quantity'] ?? null, $a['properties']['sku'] ?? null ) : null ) );
 
 // 12b2. Events settings: a renamed event is sent under its new name only; removals have their own switch.
-update_option( \W99\Trace\Settings::EVENT_NAMES_OPTION, [ 'product_added' => 'Add to Cart' ] );
-\W99\Trace\Settings::flush();
+update_option( \W99Phwc\Settings::EVENT_NAMES_OPTION, [ 'product_added' => 'Add to Cart' ] );
+\W99Phwc\Settings::flush();
 $renamed_before  = count_of( 'Add to Cart' );
 $standard_before = count_of( 'Product Added' );
 WC()->cart->add_to_cart( $p->get_id(), 1 );
 run_pending();
 check( 'events: a renamed event is sent under its new name only', $renamed_before + 1 === count_of( 'Add to Cart' ) && $standard_before === count_of( 'Product Added' ) );
-delete_option( \W99\Trace\Settings::EVENT_NAMES_OPTION );
+delete_option( \W99Phwc\Settings::EVENT_NAMES_OPTION );
 set_opt( 'ev_cart_removed', 'no' );
 $removed_before = count_of( 'Product Removed' );
 $added_before   = count_of( 'Product Added' );
@@ -548,9 +548,9 @@ check( '0.2.x queued order task routed into the new queue', $before_o + 1 === co
 
 // 17. Browser module: off by default (pilot mode prints nothing); when on, the page config is the same for every visitor.
 set_opt( 'browser', 'no' );
-check( 'browser module off: nothing printed', ! \W99\Trace\Settings::browser_enabled() );
+check( 'browser module off: nothing printed', ! \W99Phwc\Settings::browser_enabled() );
 set_opt( 'browser', 'yes' );
-check( 'browser module: automatic consent with no consent platform found stays off', ! \W99\Trace\Settings::browser_module_runs() );
+check( 'browser module: automatic consent with no consent platform found stays off', ! \W99Phwc\Settings::browser_module_runs() );
 set_opt( 'consent', 'cookiebot' );
 $render = function ( $cookies ) {
 	global $wp_scripts;
@@ -566,7 +566,7 @@ $customer = wp_insert_user( [ 'user_login' => 'buyer42', 'user_pass' => wp_gener
 wp_set_current_user( $customer );
 $c = $render( [] );
 wp_set_current_user( 0 );
-check( 'browser module: a signed-in customer\'s page carries no account ID (cache-safe)', '' !== $c && false === strpos( $c, \W99\Trace\Settings::customer_distinct_id( (int) $customer ) ) && $c === $a );
+check( 'browser module: a signed-in customer\'s page carries no account ID (cache-safe)', '' !== $c && false === strpos( $c, \W99Phwc\Settings::customer_distinct_id( (int) $customer ) ) && $c === $a );
 // Settings from the panel reach the page: the consent switch, and further posthog-js options (protected ones dropped).
 set_opt( 'early_start', 'yes' );
 set_opt( 'posthog_js_options', '{"capture_heatmaps": false, "disable_session_recording": true, "person_profiles": "always", "persistence": "memory"}' );
@@ -577,10 +577,10 @@ check( 'panel: further posthog-js options reach the page, protected ones dropped
 set_opt( 'posthog_js_options', '{not json' );
 $e   = $render( [] );
 $cfg = json_decode( substr( $e, strpos( $e, '{' ), strrpos( $e, '}' ) - strpos( $e, '{' ) + 1 ), true );
-check( 'panel: invalid JSON is ignored and reported', [] === (array) ( $cfg['posthogConfig'] ?? [ 'x' ] ) && \W99\Trace\Settings::posthog_js_options_invalid() );
+check( 'panel: invalid JSON is ignored and reported', [] === (array) ( $cfg['posthogConfig'] ?? [ 'x' ] ) && \W99Phwc\Settings::posthog_js_options_invalid() );
 set_opt( 'posthog_js_options', '' );
 // Before the visitor answers the banner: 0.3.0's consent switch carries over; "Record the visit" and its page-storage option reach the page.
-check( 'before consent: a saved 0.3.0 consent switch reads as "switched off"', 'switch' === \W99\Trace\Settings::before_consent() && 'switch' === ( $cfg['beforeConsent'] ?? null ) );
+check( 'before consent: a saved 0.3.0 consent switch reads as "switched off"', 'switch' === \W99Phwc\Settings::before_consent() && 'switch' === ( $cfg['beforeConsent'] ?? null ) );
 set_opt( 'before_consent', 'hold' );
 set_opt( 'hold_across_pages', 'yes' );
 $e   = $render( [] );
@@ -613,29 +613,29 @@ check( 'person profiles "only logged-in customers": anonymous buyer\'s server pu
 set_opt( 'person_profiles', 'always' );
 
 // 18. A copy of the shop carrying the live settings: sending stops until an administrator confirms the address.
-\W99\Trace\Settings::arm(); // as on saving the settings with sending on
-$lock_raw = (string) get_option( \W99\Trace\Settings::LOCK_OPTION );
-$here     = \W99\Trace\Settings::site_address();
-check( 'site lock: stored encoded, so moving the site\'s address does not rewrite it', '' !== $here && 0 === strpos( $lock_raw, 'b64:' ) && false === strpos( $lock_raw, $here ) && $here === \W99\Trace\Settings::locked_address() );
-update_option( \W99\Trace\Settings::LOCK_OPTION, $here ); // a 0.3.0 preview's plain value: still read, re-stored encoded
-check( 'site lock: a plain value for this address still counts as this site', ! \W99\Trace\Settings::site_moved() );
-\W99\Trace\Settings::arm();
-check( 'site lock: a plain value is re-stored encoded', 0 === strpos( (string) get_option( \W99\Trace\Settings::LOCK_OPTION ), 'b64:' ) );
-update_option( \W99\Trace\Settings::LOCK_OPTION, 'b64:' . base64_encode( 'live-shop.example' ) );
+\W99Phwc\Settings::arm(); // as on saving the settings with sending on
+$lock_raw = (string) get_option( \W99Phwc\Settings::LOCK_OPTION );
+$here     = \W99Phwc\Settings::site_address();
+check( 'site lock: stored encoded, so moving the site\'s address does not rewrite it', '' !== $here && 0 === strpos( $lock_raw, 'b64:' ) && false === strpos( $lock_raw, $here ) && $here === \W99Phwc\Settings::locked_address() );
+update_option( \W99Phwc\Settings::LOCK_OPTION, $here ); // a 0.3.0 preview's plain value: still read, re-stored encoded
+check( 'site lock: a plain value for this address still counts as this site', ! \W99Phwc\Settings::site_moved() );
+\W99Phwc\Settings::arm();
+check( 'site lock: a plain value is re-stored encoded', 0 === strpos( (string) get_option( \W99Phwc\Settings::LOCK_OPTION ), 'b64:' ) );
+update_option( \W99Phwc\Settings::LOCK_OPTION, 'b64:' . base64_encode( 'live-shop.example' ) );
 $_COOKIE  = [ $cookie_name => $cookie_json ];
 $before_n = count( $GLOBALS['sent'] );
 $o        = checkout( $p );
 $o->payment_complete( 'tr_18' );
 run_pending();
-check( 'copied site: nothing sent', $before_n === count( $GLOBALS['sent'] ) && ! \W99\Trace\Settings::can_send() );
-\W99\Trace\Settings::arm( true );
+check( 'copied site: nothing sent', $before_n === count( $GLOBALS['sent'] ) && ! \W99Phwc\Settings::can_send() );
+\W99Phwc\Settings::arm( true );
 $o = checkout( $p );
 $o->payment_complete( 'tr_18b' );
 run_pending();
-check( 'copied site: sends again once an administrator confirms this address', \W99\Trace\Settings::can_send() && 'sent' === ( state( $o )['status'] ?? '' ) );
+check( 'copied site: sends again once an administrator confirms this address', \W99Phwc\Settings::can_send() && 'sent' === ( state( $o )['status'] ?? '' ) );
 
 // 19. Erasure and export (WordPress privacy tools): IP, user agent and URLs removed; state and IDs kept.
-$exp = ( new \W99\Trace\Privacy() )->export( EMAIL, 1 );
+$exp = ( new \W99Phwc\Privacy() )->export( EMAIL, 1 );
 check( 'export: 99Trace data listed for the buyer\'s e-mail', ! empty( $exp['data'] ) && false !== strpos( wp_json_encode( $exp ), BUYER_IP ) );
 WC_Privacy_Erasers::remove_order_personal_data( wc_get_order( $o->get_id() ) );
 $ctx = json_decode( (string) wc_get_order( $o->get_id() )->get_meta( '_99w_ph_capture' ), true );
@@ -643,11 +643,11 @@ $st  = state( $o );
 check( 'erasure: IP, user agent and URL removed, delivery state kept', ! isset( $ctx['ip'] ) && ! isset( $ctx['user_agent'] ) && ! isset( $st['event']['properties']['$ip'] ) && ! isset( $st['event']['properties']['$raw_user_agent'] ) && 'sent' === ( $st['status'] ?? '' ) && ! empty( $st['uuid'] ) );
 
 // 20. 0.4.0 settings: event names, browser features, the tabbed settings page, the upgrade.
-list( $kept, $rejected ) = \W99\Trace\Settings::clean_event_names( [ 'order_completed' => ' Purchase ', 'order_refunded' => '$refund', 'checkout_started' => 'Order Completed', 'cart_viewed' => str_repeat( 'x', 101 ), 'pageview' => 'Page', 'product_viewed' => 'Product Viewed' ] );
+list( $kept, $rejected ) = \W99Phwc\Settings::clean_event_names( [ 'order_completed' => ' Purchase ', 'order_refunded' => '$refund', 'checkout_started' => 'Order Completed', 'cart_viewed' => str_repeat( 'x', 101 ), 'pageview' => 'Page', 'product_viewed' => 'Product Viewed' ] );
 check( 'event names: kept trimmed; "$", another event\'s name and over 100 characters refused; PostHog\'s own ignored', [ 'order_completed' => 'Purchase' ] === $kept && [ 'Order Refunded', 'Checkout Started', 'Cart Viewed' ] === $rejected );
 set_opt( 'browser', 'yes' );
 set_opt( 'consent', 'cookiebot' );
-update_option( \W99\Trace\Settings::EVENT_NAMES_OPTION, [ 'product_viewed' => 'Viewed Product', 'order_completed' => 'Purchase' ] );
+update_option( \W99Phwc\Settings::EVENT_NAMES_OPTION, [ 'product_viewed' => 'Viewed Product', 'order_completed' => 'Purchase' ] );
 set_opt( 'ft_replay', 'no' );
 set_opt( 'ft_heatmaps', 'no' );
 set_opt( 'ft_exceptions', 'yes' );
@@ -668,7 +668,7 @@ set_opt( 'posthog_js_options', '' );
 foreach ( [ 'ft_web_vitals', 'ft_heatmaps', 'ft_exceptions', 'ft_replay', 'ft_surveys', 'autocapture', 'capture_dead_clicks' ] as $k ) {
 	delete_option( 'w99_phwc_' . $k );
 }
-\W99\Trace\Settings::flush();
+\W99Phwc\Settings::flush();
 $c  = $page_cfg();
 $pc = $c['posthogConfig'] ?? [];
 check( 'features: by default PostHog\'s project settings decide (nothing set for web vitals, heatmaps, errors, replay, surveys, dead clicks)', ! isset( $pc['capture_performance'], $pc['capture_heatmaps'], $pc['capture_exceptions'], $pc['disable_session_recording'], $pc['disable_surveys'] ) && array_key_exists( 'deadClicks', $c ) && null === $c['deadClicks'] && true === ( $c['autocapture'] ?? null ), wp_json_encode( [ $pc, $c['deadClicks'] ?? null, $c['autocapture'] ?? null ] ) );
@@ -690,15 +690,15 @@ $c = $page_cfg();
 remove_filter( 'w99_phwc_posthog_js_config', $js_filter );
 check( 'posthog-js filter: adds options, never protected ones (before_send, bootstrap, persistence)', ! isset( $c['posthogConfig']['before_send'], $c['posthogConfig']['bootstrap'], $c['posthogConfig']['persistence'] ) && 1800 === ( $c['posthogConfig']['session_idle_timeout_seconds'] ?? null ), wp_json_encode( $c['posthogConfig'] ?? null ) );
 set_opt( 'ft_replay', 'on' ); // not a choice for replay: PostHog's switch decides whether it records
-check( 'features: replay cannot be forced on from the page (read as PostHog\'s setting)', 'posthog' === \W99\Trace\Settings::feature( 'ft_replay' ) );
+check( 'features: replay cannot be forced on from the page (read as PostHog\'s setting)', 'posthog' === \W99Phwc\Settings::feature( 'ft_replay' ) );
 set_opt( 'ft_exceptions', 'yes' );
 set_opt( 'ft_replay', 'no' );
-\W99\Trace\Settings::normalize_features();
+\W99Phwc\Settings::normalize_features();
 check( 'features: 0.4.0 tick boxes become the choices they meant (errors ticked = on, replay unticked = off)', 'on' === get_option( 'w99_phwc_ft_exceptions' ) && 'off' === get_option( 'w99_phwc_ft_replay' ) );
 foreach ( [ 'ft_web_vitals', 'ft_heatmaps', 'ft_exceptions', 'ft_replay', 'ft_surveys', 'autocapture', 'capture_dead_clicks' ] as $k ) {
 	delete_option( 'w99_phwc_' . $k );
 }
-\W99\Trace\Settings::flush();
+\W99Phwc\Settings::flush();
 set_opt( 'browser', 'no' ); // the purchase below: server events only, visitor from the test cookie as in the other purchase checks
 set_opt( 'consent', 'auto' );
 $_COOKIE = [ $cookie_name => $cookie_json ];
@@ -711,16 +711,16 @@ foreach ( [ 'ft_replay', 'ft_heatmaps', 'capture_pageview', 'ev_confirmation_vie
 }
 set_opt( 'ft_exceptions', 'no' );
 set_opt( 'posthog_js_options', '' );
-delete_option( \W99\Trace\Settings::EVENT_NAMES_OPTION );
+delete_option( \W99Phwc\Settings::EVENT_NAMES_OPTION );
 
 require_once WC_ABSPATH . 'includes/admin/wc-admin-functions.php';
 require_once WC_ABSPATH . 'includes/admin/class-wc-admin-settings.php';
 require_once WC_ABSPATH . 'includes/admin/settings/class-wc-settings-page.php';
-$page     = new \W99\Trace\SettingsPage();
+$page     = new \W99Phwc\SettingsPage();
 $html     = '';
 $all_desc = true;
 $tabs_ok  = true;
-foreach ( array_keys( \W99\Trace\Admin::sections() ) as $section ) {
+foreach ( array_keys( \W99Phwc\Admin::sections() ) as $section ) {
 	$fields  = $page->get_settings_for_section( $section );
 	$tabs_ok = $tabs_ok && is_array( $fields ) && count( $fields ) >= 3;
 	foreach ( $fields as $f ) {
@@ -732,27 +732,76 @@ foreach ( array_keys( \W99\Trace\Admin::sections() ) as $section ) {
 	WC_Admin_Settings::output_fields( $fields );
 	$html .= ob_get_clean();
 }
-check( 'settings page: six tabs render, and every setting is explained', 6 === count( \W99\Trace\Admin::sections() ) && $tabs_ok && $all_desc && false !== strpos( $html, 'Name in PostHog' ) && false !== strpos( $html, 'Track every visitor' ) && false !== strpos( $html, 'Session replay' ) );
+check( 'settings page: six tabs render, and every setting is explained', 6 === count( \W99Phwc\Admin::sections() ) && $tabs_ok && $all_desc && false !== strpos( $html, 'Name in PostHog' ) && false !== strpos( $html, 'Track every visitor' ) && false !== strpos( $html, 'Session replay' ) );
 check( 'settings page: Browser features offer PostHog\'s setting / Always on / Always off', false !== strpos( $html, 'PostHog&#039;s setting (recommended)' ) || false !== strpos( $html, "PostHog's setting (recommended)" ) );
-\W99\Trace\Admin::save_events( [ 'w99_phwc_event_on' => [ 'ev_refund' => 'no', 'autocapture' => 'yes' ], 'w99_phwc_event_names' => [ 'order_completed' => 'Purchase', 'order_refunded' => '$bad' ] ] );
-check( 'events table saved: switch and name kept, a "$" name refused', 'no' === get_option( 'w99_phwc_ev_refund' ) && [ 'order_completed' => 'Purchase' ] === get_option( \W99\Trace\Settings::EVENT_NAMES_OPTION ) );
+\W99Phwc\Admin::save_events( [ 'w99_phwc_event_on' => [ 'ev_refund' => 'no', 'autocapture' => 'yes' ], 'w99_phwc_event_names' => [ 'order_completed' => 'Purchase', 'order_refunded' => '$bad' ] ] );
+check( 'events table saved: switch and name kept, a "$" name refused', 'no' === get_option( 'w99_phwc_ev_refund' ) && [ 'order_completed' => 'Purchase' ] === get_option( \W99Phwc\Settings::EVENT_NAMES_OPTION ) );
 set_opt( 'ev_refund', 'yes' );
-delete_option( \W99\Trace\Settings::EVENT_NAMES_OPTION );
-\W99\Trace\Settings::flush();
+delete_option( \W99Phwc\Settings::EVENT_NAMES_OPTION );
+
+// 1.1.1 (WordPress.org review): the Events form is read only with WooCommerce's settings nonce and the manager's capability.
+$w99_options = function () {
+	global $wpdb;
+	$out = [];
+	foreach ( $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'w99\\_phwc\\_%'" ) as $name ) {
+		$out[ $name ] = get_option( $name );
+	}
+	return $out;
+};
+$w99_restore = function ( array $snapshot ) use ( $w99_options ) {
+	foreach ( array_keys( $w99_options() ) as $name ) {
+		if ( ! array_key_exists( $name, $snapshot ) ) {
+			delete_option( $name );
+		}
+	}
+	foreach ( $snapshot as $name => $value ) {
+		update_option( $name, $value );
+	}
+	\W99Phwc\Settings::flush();
+};
+$w99_snapshot = $w99_options();
+$GLOBALS['current_section'] = 'events';
+wp_set_current_user( 1 );
+$_POST    = [ 'w99_phwc_event_names' => [ 'order_completed' => 'Bought <b>it</b>' ] ];
+$_REQUEST = [ '_wpnonce' => wp_create_nonce( 'woocommerce-settings' ) ];
+$page->save();
+check( 'events form: saved with the settings nonce, the name sanitized', [ 'order_completed' => 'Bought it' ] === get_option( \W99Phwc\Settings::EVENT_NAMES_OPTION ) );
+$w99_restore( $w99_snapshot );
+$_REQUEST = [];
+$page->save();
+check( 'events form: not read without the settings nonce', false === get_option( \W99Phwc\Settings::EVENT_NAMES_OPTION ) );
+$w99_restore( $w99_snapshot );
+wp_set_current_user( 0 );
+$_REQUEST = [ '_wpnonce' => wp_create_nonce( 'woocommerce-settings' ) ];
+$page->save();
+check( 'events form: not read for a visitor without the manager capability', false === get_option( \W99Phwc\Settings::EVENT_NAMES_OPTION ) );
+$w99_restore( $w99_snapshot );
+$_POST    = [];
+$_REQUEST = [];
+$GLOBALS['current_section'] = '';
+check( 'snapshot restored after the form checks', $w99_snapshot === $w99_options() );
+
+// 1.1.1: IDs that text sanitizing would change are refused; the Meta click ID is sanitized.
+check( 'IDs: tags or encoded characters are refused, real IDs kept', null === \W99Phwc\Util::clean_id( '<b>x</b>' ) && null === \W99Phwc\Util::clean_id( 'a%3Cb' ) && 'buyer@example.com' === \W99Phwc\Util::clean_id( 'buyer@example.com' ) && '019a7b2c-1d2e-7f30-8a41-5b6c7d8e9f00' === \W99Phwc\Util::clean_id( '019a7b2c-1d2e-7f30-8a41-5b6c7d8e9f00' ) );
+$fbc_identity = Identity::from_cookie( wp_json_encode( [ 'distinct_id' => '019a7b2c-1d2e-7f30-8a41-5b6c7d8e9f00', '$fbc_persistence' => [ 'value' => 'fb.1.1763000000000.IwAR<b>x</b>2' ] ] ), time() );
+check( 'Meta click ID from the cookie is sanitized', 'fb.1.1763000000000.IwARx2' === ( $fbc_identity['props']['$fbc'] ?? null ) );
+$fbc_identity = Identity::from_cookie( wp_json_encode( [ 'distinct_id' => '019a7b2c-1d2e-7f30-8a41-5b6c7d8e9f00', '$fbc_persistence' => [ 'value' => 'fb.1.1763000000000.IwAR2xYz_-AbC' ] ] ), time() );
+check( 'a real Meta click ID is unchanged', 'fb.1.1763000000000.IwAR2xYz_-AbC' === ( $fbc_identity['props']['$fbc'] ?? null ) );
+\W99Phwc\Settings::flush();
 
 update_option( 'w99_phwc_version', '0.3.0' );
 set_opt( 'ev_cart', 'no' );
 delete_option( 'w99_phwc_ev_cart_removed' );
-$upgrade = new ReflectionMethod( \W99\Trace\Plugin::class, 'upgrade' );
+$upgrade = new ReflectionMethod( \W99Phwc\Plugin::class, 'upgrade' );
 $upgrade->setAccessible( true );
 delete_option( 'w99_phwc_consent' );
 delete_option( 'w99_phwc_unconsented_orders' );
 delete_option( 'w99_phwc_consent_defaults' ); // a site that ran 0.4.0 or earlier has no record of the step
 $upgrade->invoke( null );
-check( 'upgrade from 0.3.0: Product Removed keeps the switch that covered it', 'no' === get_option( 'w99_phwc_ev_cart_removed' ) && W99_TRACE_VERSION === get_option( 'w99_phwc_version' ) );
+check( 'upgrade from 0.3.0: Product Removed keeps the switch that covered it', 'no' === get_option( 'w99_phwc_ev_cart_removed' ) && W99_PHWC_TRACE_VERSION === get_option( 'w99_phwc_version' ) );
 check( 'upgrade: a shop that never saved its consent settings keeps the old behaviour (follow the banner, orders without consent not sent)', 'auto' === get_option( 'w99_phwc_consent' ) && 'skip' === get_option( 'w99_phwc_unconsented_orders' ) && 'kept' === get_option( 'w99_phwc_consent_defaults' ) );
 delete_option( 'w99_phwc_consent' );
-update_option( 'w99_phwc_version', W99_TRACE_VERSION ); // e.g. a site that ran the first 0.5.0 build: same version, step not yet recorded
+update_option( 'w99_phwc_version', W99_PHWC_TRACE_VERSION ); // e.g. a site that ran the first 0.5.0 build: same version, step not yet recorded
 delete_option( 'w99_phwc_consent_defaults' );
 $upgrade->invoke( null );
 check( 'upgrade step tied to its own record, not the version: a site already at this version still keeps its consent handling', 'auto' === get_option( 'w99_phwc_consent' ) );
@@ -856,7 +905,7 @@ wp_set_current_user( $customer );
 $_COOKIE = [];
 WC()->cart->add_to_cart( $p->get_id(), 1 );
 run_pending();
-check( 'signed in: the account ID, no visitor cookie created', \W99\Trace\Settings::customer_distinct_id( (int) $customer ) === last_event( 'Product Added' )['distinct_id'] && ! isset( $_COOKIE[ Visitor::COOKIE ] ) );
+check( 'signed in: the account ID, no visitor cookie created', \W99Phwc\Settings::customer_distinct_id( (int) $customer ) === last_event( 'Product Added' )['distinct_id'] && ! isset( $_COOKIE[ Visitor::COOKIE ] ) );
 wp_set_current_user( 0 );
 $_COOKIE = [ Visitor::COOKIE => $vid['id'] ];
 do_action( 'wp_logout', (int) $customer );
@@ -878,7 +927,7 @@ $_GET = [];
 check( 'thank-you page: the order is offered for linking; no ID printed', true === ( $cfg['orderLink']['claimable'] ?? null ) && ! isset( $cfg['orderLink']['distinct_id'] ), wp_json_encode( $cfg['orderLink'] ?? null ) );
 check( 'page config: the visitor cookie and the link address, the same for every visitor', Visitor::COOKIE === ( $cfg['visitorCookie'] ?? '' ) && false !== strpos( (string) ( $cfg['linkUrl'] ?? '' ), Visitor::AJAX ) );
 $o->payment_complete( 'tr_21h' );
-$env      = [ 'v' => 1, 'token' => SEND_KEY, 'distinct_id' => '0198-browser-id', 'device_id' => '0198-browser-id', 'session_id' => \W99\Trace\Uuid::v7( ( time() + 300 ) * 1000 ), 'user_state' => 'anonymous', 'capturing' => true, 'consent_status' => 'granted', 'props' => [ '$browser' => 'Mobile Safari' ] ];
+$env      = [ 'v' => 1, 'token' => SEND_KEY, 'distinct_id' => '0198-browser-id', 'device_id' => '0198-browser-id', 'session_id' => \W99Phwc\Uuid::v7( ( time() + 300 ) * 1000 ), 'user_state' => 'anonymous', 'capturing' => true, 'consent_status' => 'granted', 'props' => [ '$browser' => 'Mobile Safari' ] ];
 $accepted = Identity::resolve( Identity::from_browser( wp_json_encode( $env ), SEND_KEY ), null, null, Consent::GRANTED, '' );
 $ask      = static fn( $o, $env, $over = [] ) => $over + [ 'order_id' => (string) $o->get_id(), 'key' => wc_get_order( $o->get_id() )->get_order_key(), 'identity' => wp_json_encode( $env ) ];
 $granted  = [ 'CookieConsent' => $granted_cb ];
@@ -917,7 +966,7 @@ run_pending();
 $m = last_event( 'Order Completed' );
 check( 'switched off, never accepted: counted anonymously, without IP or browser details', $m && (string) $o->get_id() === $m['properties']['order_id'] && 0 === strpos( $m['distinct_id'], '99hog:order:' ) && ! isset( $m['properties']['$ip'] ) && ! isset( $m['properties']['$raw_user_agent'] ) );
 delete_option( 'w99_phwc_before_consent' );
-\W99\Trace\Settings::flush();
+\W99Phwc\Settings::flush();
 $_COOKIE  = [ Visitor::COOKIE => $vid['id'] ];
 $before_a = count_of( 'Product Added' );
 WC()->cart->add_to_cart( $p->get_id(), 1 );
@@ -988,7 +1037,7 @@ update_user_meta( $member, 'billing_first_name', 'Bo' );
 // A sign-in: the details go on the browser's visitor (posthog-js's cookie), which the browser module then
 // identifies as the account; never on the account ID itself (PostHog could refuse the later merge).
 set_opt( 'browser', 'yes' );
-$own_cookie = \W99\Trace\Identity::cookie_name( \W99\Trace\Settings::cookie_key() );
+$own_cookie = \W99Phwc\Identity::cookie_name( \W99Phwc\Settings::cookie_key() );
 $_COOKIE    = [ $own_cookie => $cookie_json ];
 $before     = count_of( '$set' );
 do_action( 'wp_login', 'details18', get_user_by( 'id', $member ) );
@@ -1068,7 +1117,7 @@ $o = wc_get_order( $o->get_id() );
 $o->payment_complete( 'tr_29d' );
 run_pending();
 $m = last_event( 'Order Completed' );
-check( 'details corner: identified_only, signed-in customer: details on the account\'s person', $m && \W99\Trace\Settings::customer_distinct_id( (int) $buyer ) === $m['distinct_id'] && 'corner29@example.test' === ( $m['properties']['$set']['email'] ?? '' ), wp_json_encode( $m ? [ $m['distinct_id'], $m['properties']['$set'] ?? null ] : null ) );
+check( 'details corner: identified_only, signed-in customer: details on the account\'s person', $m && \W99Phwc\Settings::customer_distinct_id( (int) $buyer ) === $m['distinct_id'] && 'corner29@example.test' === ( $m['properties']['$set']['email'] ?? '' ), wp_json_encode( $m ? [ $m['distinct_id'], $m['properties']['$set'] ?? null ] : null ) );
 wp_set_current_user( 0 );
 set_opt( 'person_profiles', 'always' );
 // Staff signing in: never sent. A new customer account: its details set at once.
@@ -1078,7 +1127,7 @@ do_action( 'wp_login', 'staff29', get_user_by( 'id', $staff ) );
 run_pending();
 check( 'details corner: a shop manager signing in sends nothing', $before === count_of( '$set' ) );
 set_opt( 'browser', 'yes' );
-$_COOKIE = [ \W99\Trace\Identity::cookie_name( \W99\Trace\Settings::cookie_key() ) => $cookie_json ];
+$_COOKIE = [ \W99Phwc\Identity::cookie_name( \W99Phwc\Settings::cookie_key() ) => $cookie_json ];
 $new = wp_insert_user( [ 'user_login' => 'new29', 'user_pass' => wp_generate_password(), 'user_email' => 'New29@Example.test', 'role' => 'customer' ] );
 do_action( 'woocommerce_created_customer', $new, [ 'user_login' => 'new29', 'user_email' => 'New29@Example.test', 'role' => 'customer' ], false );
 run_pending();
@@ -1109,11 +1158,11 @@ check( 'consent corner: Cookiebot without an answer on record, posthog-js cookie
 set_opt( 'unconsented_orders', 'anonymous' );
 // The feature value 0.4.0 stored for dead clicks ("yes", forced on then) now means PostHog's setting.
 update_option( 'w99_phwc_capture_dead_clicks', 'yes' );
-\W99\Trace\Settings::flush();
-check( 'features corner: 0.4.0\'s stored "yes" for dead clicks follows PostHog (no longer forced on)', 'posthog' === \W99\Trace\Settings::feature( 'capture_dead_clicks' ) );
+\W99Phwc\Settings::flush();
+check( 'features corner: 0.4.0\'s stored "yes" for dead clicks follows PostHog (no longer forced on)', 'posthog' === \W99Phwc\Settings::feature( 'capture_dead_clicks' ) );
 update_option( 'w99_phwc_capture_dead_clicks', 'no' );
-\W99\Trace\Settings::flush();
-check( 'features corner: 0.4.0\'s stored "no" for dead clicks stays off', 'off' === \W99\Trace\Settings::feature( 'capture_dead_clicks' ) );
+\W99Phwc\Settings::flush();
+check( 'features corner: 0.4.0\'s stored "no" for dead clicks stays off', 'off' === \W99Phwc\Settings::feature( 'capture_dead_clicks' ) );
 delete_option( 'w99_phwc_capture_dead_clicks' );
 set_opt( 'consent', 'auto' );
 $_COOKIE = [];
@@ -1124,7 +1173,7 @@ wp_set_current_user( 0 );
 set_opt( 'person_profiles', 'always' );
 set_opt( 'consent', 'auto' );
 $_COOKIE = [];
-\W99\Trace\Settings::flush();
+\W99Phwc\Settings::flush();
 
 // 30. Every combination of the settings that interact.
 @set_time_limit( 0 );
@@ -1146,7 +1195,7 @@ foreach ( [ 'off', 'test', 'on' ] as $mode ) {
 							foreach ( [ 'mode' => $mode, 'browser' => $browser, 'consent' => $consent, 'before_consent' => $before, 'hold_across_pages' => $across, 'person_profiles' => $persons, 'ft_flags' => $flags ] as $k => $v ) {
 								update_option( 'w99_phwc_' . $k, $v );
 							}
-							\W99\Trace\Settings::flush();
+							\W99Phwc\Settings::flush();
 							$e        = $render( [] );
 							$resolved = 'auto' === $consent ? 'cookiebot' : $consent;
 							$want_on  = 'off' !== $mode && 'yes' === $browser;
@@ -1238,7 +1287,7 @@ foreach ( [ 'posthog', 'on', 'off' ] as $ex ) {
 	foreach ( [ 'autocapture' => $ac, 'capture_dead_clicks' => $dc, 'ft_web_vitals' => $wv, 'ft_heatmaps' => $hm, 'ft_replay' => $rp, 'ft_surveys' => $sv, 'ft_exceptions' => $ex ] as $k => $v ) {
 		update_option( 'w99_phwc_' . $k, $v );
 	}
-	\W99\Trace\Settings::flush();
+	\W99Phwc\Settings::flush();
 	$e  = $render( [] );
 	$c  = json_decode( substr( $e, strpos( $e, '{' ), strrpos( $e, '}' ) - strpos( $e, '{' ) + 1 ), true );
 	$pc = $c['posthogConfig'] ?? [];
@@ -1355,14 +1404,14 @@ try {
 	$before = wc_get_order( $before->get_id() );
 	$before->set_date_paid( time() - DAY_IN_SECONDS );
 	$before->save();
-	delete_option( \W99\Trace\Settings::SINCE_OPTION );
+	delete_option( \W99Phwc\Settings::SINCE_OPTION );
 	set_opt( 'mode', 'on' );
-	check( 'switch-over: no start recorded before sending starts', null === \W99\Trace\Settings::sending_since() );
-	\W99\Trace\Settings::mark_sending();
-	$since = \W99\Trace\Settings::sending_since();
+	check( 'switch-over: no start recorded before sending starts', null === \W99Phwc\Settings::sending_since() );
+	\W99Phwc\Settings::mark_sending();
+	$since = \W99Phwc\Settings::sending_since();
 	check( 'switch-over: the start of sending to this project is recorded', null !== $since && abs( $since - time() ) <= 5 );
-	\W99\Trace\Settings::mark_sending();
-	check( 'switch-over: recorded once', $since === \W99\Trace\Settings::sending_since() );
+	\W99Phwc\Settings::mark_sending();
+	check( 'switch-over: recorded once', $since === \W99Phwc\Settings::sending_since() );
 	( new Queue() )->sweep();
 	wc_get_order( $before->get_id() )->update_status( 'completed' ); // Shipped after the switch.
 	run_pending();
@@ -1373,17 +1422,17 @@ try {
 	run_pending();
 	check( 'switch-over: a purchase paid after the switch is sent', 'sent' === ( state( $after )['status'] ?? '' ) && 1 === count( array_filter( sent_events( 'Order Completed' ), fn( $e ) => (string) $after->get_id() === (string) ( $e['properties']['order_id'] ?? '' ) ) ) );
 	set_opt( 'key', 'phc_OTHERPROJ' );
-	check( 'switch-over: another project has its own start', null === \W99\Trace\Settings::sending_since() );
+	check( 'switch-over: another project has its own start', null === \W99Phwc\Settings::sending_since() );
 	set_opt( 'key', SEND_KEY );
-	check( 'switch-over: the first project keeps its start', $since === \W99\Trace\Settings::sending_since() );
+	check( 'switch-over: the first project keeps its start', $since === \W99Phwc\Settings::sending_since() );
 	set_opt( 'mode', 'test' );
-	delete_option( \W99\Trace\Settings::SINCE_OPTION );
-	\W99\Trace\Settings::mark_sending();
-	check( 'switch-over: test mode records no start (nothing reaches the project)', null === \W99\Trace\Settings::sending_since() );
+	delete_option( \W99Phwc\Settings::SINCE_OPTION );
+	\W99Phwc\Settings::mark_sending();
+	check( 'switch-over: test mode records no start (nothing reaches the project)', null === \W99Phwc\Settings::sending_since() );
 } catch ( \Throwable $e ) {
 	check( 'switch-over: ran without error', false, get_class( $e ) . ': ' . $e->getMessage() . ' at ' . basename( $e->getFile() ) . ':' . $e->getLine() );
 }
-delete_option( \W99\Trace\Settings::SINCE_OPTION );
+delete_option( \W99Phwc\Settings::SINCE_OPTION );
 set_opt( 'mode', 'on' );
 set_opt( 'consent', 'auto' );
 set_opt( 'unconsented_orders', 'skip' );
@@ -1398,13 +1447,13 @@ try {
 	set_opt( 'unconsented_orders', 'anonymous' );
 	set_opt( 'mode', 'on' );
 	set_opt( 'browser', 'no' );
-	check( 'who: defaults, staff, page editors and previews not recorded; checkout-page carts not sent', ! \W99\Trace\Settings::on( 'record_staff' ) && ! \W99\Trace\Settings::on( 'record_editors' ) && ! \W99\Trace\Settings::on( 'record_previews' ) && ! \W99\Trace\Settings::on( 'cart_checkout_fill' ) );
+	check( 'who: defaults, staff, page editors and previews not recorded; checkout-page carts not sent', ! \W99Phwc\Settings::on( 'record_staff' ) && ! \W99Phwc\Settings::on( 'record_editors' ) && ! \W99Phwc\Settings::on( 'record_previews' ) && ! \W99Phwc\Settings::on( 'cart_checkout_fill' ) );
 	add_role( 'page_builder32', 'Page builder (can edit pages, not orders)', [ 'read' => true, 'edit_pages' => true, 'edit_others_pages' => true, 'publish_pages' => true, 'edit_posts' => true, 'edit_products' => true ] );
 	$u = [];
 	foreach ( [ 'administrator', 'shop_manager', 'editor', 'page_builder32', 'customer' ] as $role ) {
 		$u[ $role ] = (int) wp_insert_user( [ 'user_login' => 'who32_' . $role, 'user_pass' => wp_generate_password(), 'user_email' => 'who32_' . $role . '@example.test', 'role' => $role ] );
 	}
-	$records = fn() => array_map( fn( $id ) => \W99\Trace\Audience::records_user( $id ), $u );
+	$records = fn() => array_map( fn( $id ) => \W99Phwc\Audience::records_user( $id ), $u );
 	check( 'who: by default only customers are recorded (not administrators, shop managers, editors or a custom page-building role)', [ 'administrator' => false, 'shop_manager' => false, 'editor' => false, 'page_builder32' => false, 'customer' => true ] === $records(), wp_json_encode( $records() ) );
 	set_opt( 'record_editors', 'yes' );
 	check( 'who: page editors recorded on their own (staff still not)', [ 'administrator' => false, 'shop_manager' => false, 'editor' => true, 'page_builder32' => true, 'customer' => true ] === $records(), wp_json_encode( $records() ) );
@@ -1413,7 +1462,7 @@ try {
 	check( 'who: shop staff recorded on their own (page editors still not)', [ 'administrator' => true, 'shop_manager' => true, 'editor' => false, 'page_builder32' => false, 'customer' => true ] === $records(), wp_json_encode( $records() ) );
 	set_opt( 'record_staff', 'no' );
 	add_filter( 'w99_phwc_track_staff', '__return_true' );
-	check( 'who: the 0.5 filter w99_phwc_track_staff still records staff', true === \W99\Trace\Audience::records_user( $u['shop_manager'] ) && false === \W99\Trace\Audience::records_user( $u['editor'] ) );
+	check( 'who: the 0.5 filter w99_phwc_track_staff still records staff', true === \W99Phwc\Audience::records_user( $u['shop_manager'] ) && false === \W99Phwc\Audience::records_user( $u['editor'] ) );
 	remove_filter( 'w99_phwc_track_staff', '__return_true' );
 
 	// A page editor testing the shop: no cart or checkout event, no browser module; recorded when the shop says so.
@@ -1464,9 +1513,9 @@ try {
 	check( 'who: preview loads and their AJAX calls send nothing; the same page outside a preview does', $before_a + 1 === count_of( 'Product Added' ), (string) ( count_of( 'Product Added' ) - $before_a ) );
 	check(
 		'who: preview and editor addresses recognised, shop pages not',
-		\W99\Trace\Audience::is_preview_url( home_url( '/wp-admin/post.php?post=9&action=elementor' ) ) && \W99\Trace\Audience::is_preview_url( home_url( '/wp-admin/customize.php?url=x' ) )
-			&& \W99\Trace\Audience::is_preview_url( home_url( '/?p=9&preview_id=9&preview_nonce=abc&preview=true' ) ) && \W99\Trace\Audience::is_preview_url( home_url( '/offer/?wfocu_customize=loaded' ) )
-			&& ! \W99\Trace\Audience::is_preview_url( home_url( '/checkouts/test-product/?utm_source=x' ) ) && ! \W99\Trace\Audience::is_preview_url( home_url( '/wp-admin/post.php?post=9&action=edit' ) ) && ! \W99\Trace\Audience::is_preview_url( '' )
+		\W99Phwc\Audience::is_preview_url( home_url( '/wp-admin/post.php?post=9&action=elementor' ) ) && \W99Phwc\Audience::is_preview_url( home_url( '/wp-admin/customize.php?url=x' ) )
+			&& \W99Phwc\Audience::is_preview_url( home_url( '/?p=9&preview_id=9&preview_nonce=abc&preview=true' ) ) && \W99Phwc\Audience::is_preview_url( home_url( '/offer/?wfocu_customize=loaded' ) )
+			&& ! \W99Phwc\Audience::is_preview_url( home_url( '/checkouts/test-product/?utm_source=x' ) ) && ! \W99Phwc\Audience::is_preview_url( home_url( '/wp-admin/post.php?post=9&action=edit' ) ) && ! \W99Phwc\Audience::is_preview_url( '' )
 	);
 	set_opt( 'record_previews', 'yes' );
 	$_GET['elementor-preview'] = '123';
@@ -1507,7 +1556,7 @@ try {
 
 	// A checkout the browser loaded in advance: held until the page reports itself shown.
 	set_opt( 'browser', 'yes' );
-	$_COOKIE = [ \W99\Trace\Identity::cookie_name( \W99\Trace\Settings::cookie_key() ) => $cookie_json ];
+	$_COOKIE = [ \W99Phwc\Identity::cookie_name( \W99Phwc\Settings::cookie_key() ) => $cookie_json ];
 	add_filter( 'woocommerce_is_checkout', '__return_true' );
 	$prefetch = function () {
 		$_SERVER['HTTP_SEC_PURPOSE'] = 'prefetch';
@@ -1523,7 +1572,7 @@ try {
 	$before_c = count_of( 'Checkout Started' );
 	$token    = $prefetch();
 	run_pending( 5, 60 );
-	$timeout = (int) get_option( '_transient_timeout_' . \W99\Trace\Storefront::SHOWN_PREFIX . $token );
+	$timeout = (int) get_option( '_transient_timeout_' . \W99Phwc\Storefront::SHOWN_PREFIX . $token );
 	check( 'loaded in advance: nothing sent while the page is not shown; its token printed for the browser, kept 30 minutes', '' !== $token && $before_c === count_of( 'Checkout Started' ) && abs( $timeout - ( time() + 1800 ) ) <= 5, wp_json_encode( [ $token, count_of( 'Checkout Started' ) - $before_c, $timeout - time() ] ) );
 	$released = ( new Storefront( new Queue() ) )->release_shown( $token ); // not $sent: that is the global record of requests
 	run_pending( 5, 60 );
@@ -1594,7 +1643,7 @@ try {
 	run_pending( 5, 3600 );
 	$cod = wc_get_order( $cod->get_id() );
 	ob_start();
-	( new \W99\Trace\Admin() )->coverage();
+	( new \W99Phwc\Admin() )->coverage();
 	$report = (string) ob_get_clean();
 	check( 'coverage report: counts a cash-on-delivery order, which is sent although it has no payment date', 'sent' === ( state( $cod )['status'] ?? '' ) && false !== strpos( $report, '<td>cod</td>' ), 'date_paid ' . ( $cod->get_date_paid() ? 'set' : 'empty' ) );
 	set_opt( 'unconsented_orders', 'skip' );
@@ -1716,7 +1765,7 @@ try {
 	$all_line = last_event( 'Order Completed' )['properties']['products'][0] ?? [];
 	check( 'custom fields "all": WooCommerce\'s cost of goods fields come with it', ! method_exists( $var, 'get_cogs_value_is_additive' ) || array_key_exists( 'cogs_value_is_additive', $all_line ), implode( ',', preg_grep( '/^cogs_/', array_keys( $all_line ) ) ) );
 
-	$page = \W99\Trace\OrderData::product_fields( $var, $vp->get_id(), $var->get_id(), \W99\Trace\OrderData::FOR_PAGE );
+	$page = \W99Phwc\OrderData::product_fields( $var, $vp->get_id(), $var->get_id(), \W99Phwc\OrderData::FOR_PAGE );
 	check( 'page data (printed for every visitor): attributes yes; custom fields, sales count and stock numbers never, even with "all"', '2 x Product' === ( $page['attributes']['pa_bundle'] ?? '' ) && ! array_intersect_key( $page, array_flip( [ 'custom_fields', 'total_sales', 'stock_quantity', 'low_stock_amount' ] ) ) && ! preg_grep( '/^cogs_/', array_keys( $page ) ), implode( ',', array_keys( $page ) ) );
 
 	// Product Added for the variation: the same properties at the top level, without changing the event's own fields.
@@ -1736,8 +1785,8 @@ try {
 	WC()->cart->empty_cart();
 	$_COOKIE = [];
 	delete_option( 'w99_phwc_product_meta' );
-	\W99\Trace\Settings::flush();
-	check( 'custom fields: off by default', 'none' === \W99\Trace\Settings::get( 'product_meta' ) && [] === \W99\Trace\OrderData::custom_fields( $var, $vp ) );
+	\W99Phwc\Settings::flush();
+	check( 'custom fields: off by default', 'none' === \W99Phwc\Settings::get( 'product_meta' ) && [] === \W99Phwc\OrderData::custom_fields( $var, $vp ) );
 	set_opt( 'unconsented_orders', 'skip' );
 } catch ( \Throwable $e ) {
 	check( 'product properties: ran without error', false, get_class( $e ) . ': ' . $e->getMessage() . ' at ' . basename( $e->getFile() ) . ':' . $e->getLine() );

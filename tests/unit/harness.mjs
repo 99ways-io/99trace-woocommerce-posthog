@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
-const src = readFileSync(new URL('../../99trace-posthog-for-woocommerce/assets/js/99trace.js', import.meta.url), 'utf8');
+const src = readFileSync(new URL('../../99trace-integration-with-posthog-for-woocommerce/assets/js/99trace.js', import.meta.url), 'utf8');
 
 /** document.cookie as a browser keeps it: one value per name, `max-age=0` deletes. */
 function cookieJar(initial = '') {

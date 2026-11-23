@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 PUBLIC = SITE / "public"
 ASSETS = PUBLIC / "assets"
-README = ROOT / "99trace-posthog-for-woocommerce" / "readme.txt"
+README = ROOT / "99trace-integration-with-posthog-for-woocommerce" / "readme.txt"
 
 
 def wordmark_paths():

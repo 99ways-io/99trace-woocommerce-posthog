@@ -7,7 +7,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '99trace-posthog-for-woocommerce/readme.txt'
+      - '99trace-integration-with-posthog-for-woocommerce/readme.txt'
       - '.wordpress-org/**'
 
 permissions:
@@ -23,7 +23,7 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SLUG: 99trace-posthog-for-woocommerce
+          SLUG: 99trace-integration-with-posthog-for-woocommerce
           README_NAME: readme.txt
           ASSETS_DIR: .wordpress-org
-          BUILD_DIR: 99trace-posthog-for-woocommerce
+          BUILD_DIR: 99trace-integration-with-posthog-for-woocommerce

@@ -1,6 +1,6 @@
 # 99Trace
 
-> 99Trace – PostHog Analytics for WooCommerce is a free, open-source (GPL-2.0-or-later) WordPress plugin by 99Ways. It sends every WooCommerce order to PostHog exactly once, on the visitor who placed it: the shop's server sends purchases, refunds and cancellations, so payment redirects, in-app browsers and ad blockers no longer lose orders, and posthog-js and the server share one first-party visitor ID.
+> 99Trace: Easy Integration with PostHog for WooCommerce is a free, open-source (GPL-2.0-or-later) WordPress plugin by 99Ways. It sends every WooCommerce order to PostHog exactly once, on the visitor who placed it: the shop's server sends purchases, refunds and cancellations, so payment redirects, in-app browsers and ad blockers no longer lose orders, and posthog-js and the server share one first-party visitor ID.
 
 - Requirements: WordPress 6.5+, WooCommerce 8.7+, PHP 8.0+, and a PostHog project (PostHog Cloud EU or US, or self-hosted).
 - Server events: Order Completed (once, at the payment time, under the identity saved at checkout), Order Refunded, Order Cancelled, Payment Failed, Checkout Started, Product Added, Product Removed, Coupon Applied, Coupon Removed.

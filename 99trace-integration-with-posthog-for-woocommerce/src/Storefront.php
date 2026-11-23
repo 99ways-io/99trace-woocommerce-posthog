@@ -10,10 +10,10 @@
  * are never cached), the order link only on thank-you pages, which carry the order key in their
  * URL and are marked DONOTCACHEPAGE.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -93,10 +93,10 @@ final class Storefront {
 			if ( 'switch' === $before && ! Settings::on( 'ft_flags' ) ) {
 				$before = 'off'; // "Switched off" is for experiments only: without feature flags it would load PostHog for nothing.
 			}
-			$url    = plugins_url( 'assets/js/99trace.js', W99_TRACE_FILE );
+			$url    = plugins_url( 'assets/js/99trace.js', W99_PHWC_TRACE_FILE );
 			// The file's own date in the version: a CDN or browser cache never serves an older module.
-			$mtime = @filemtime( plugin_dir_path( W99_TRACE_FILE ) . 'assets/js/99trace.js' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
-			wp_register_script( 'w99-phwc', $url, array(), W99_TRACE_VERSION . ( $mtime ? '.' . $mtime : '' ), array( 'in_footer' => false ) );
+			$mtime = @filemtime( plugin_dir_path( W99_PHWC_TRACE_FILE ) . 'assets/js/99trace.js' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+			wp_register_script( 'w99-phwc', $url, array(), W99_PHWC_TRACE_VERSION . ( $mtime ? '.' . $mtime : '' ), array( 'in_footer' => false ) );
 			$config = array(
 				'token'             => Settings::token(),
 				'apiHost'           => Settings::browser_host(),
@@ -171,7 +171,7 @@ final class Storefront {
 
 	public function rocket_exclusions( $list ) {
 		$list   = is_array( $list ) ? $list : array();
-		$list[] = '/99trace-posthog-for-woocommerce/assets/js/99trace.js';
+		$list[] = '/99trace-integration-with-posthog-for-woocommerce/assets/js/99trace.js';
 		$list[] = 'w99phwc';
 		return $list;
 	}
@@ -219,8 +219,9 @@ final class Storefront {
 				return; // Without 99Trace's posthog-js, the browser's visitor is another plugin's: nothing to set it on.
 			}
 			$ckey    = Settings::cookie_key();
-			$cookie  = '' !== $ckey ? Identity::from_cookie( Util::cookie( $_COOKIE, Identity::cookie_name( $ckey ) ), time() ) : null; // phpcs:ignore
-			$consent = Consent::evaluate( Settings::consent_mode(), $_COOKIE, $ckey, null !== $cookie, function_exists( 'wp_has_consent' ) ? 'wp_has_consent' : null ); // phpcs:ignore
+			$cookies = Util::request_cookies();
+			$cookie  = '' !== $ckey ? Identity::from_cookie( Util::cookie( $cookies, Identity::cookie_name( $ckey ) ), time() ) : null;
+			$consent = Consent::evaluate( Settings::consent_mode(), $cookies, $ckey, null !== $cookie, function_exists( 'wp_has_consent' ) ? 'wp_has_consent' : null );
 			if ( null === $cookie || ! Consent::allows_details( $consent ) ) {
 				return;
 			}
@@ -283,7 +284,8 @@ final class Storefront {
 	/** Whether this request's visitor allowed analytics (the browser module's cookies exist only then). */
 	private static function analytics_consent(): bool {
 		$ckey    = Settings::token();
-		$consent = Consent::evaluate( Settings::consent_mode(), $_COOKIE, $ckey, null !== Util::cookie( $_COOKIE, Identity::cookie_name( $ckey ) ), function_exists( 'wp_has_consent' ) ? 'wp_has_consent' : null ); // phpcs:ignore
+		$cookies = Util::request_cookies();
+		$consent = Consent::evaluate( Settings::consent_mode(), $cookies, $ckey, null !== Util::cookie( $cookies, Identity::cookie_name( $ckey ) ), function_exists( 'wp_has_consent' ) ? 'wp_has_consent' : null );
 		return Consent::allows_linking( $consent );
 	}
 
@@ -372,6 +374,7 @@ final class Storefront {
 				return;
 			}
 			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- the standard constant page-cache plugins read.
 				define( 'DONOTCACHEPAGE', true );
 			}
 			nocache_headers();
@@ -668,6 +671,7 @@ final class Storefront {
 		if ( '' === $this->shown_token ) {
 			$this->shown_token = bin2hex( random_bytes( 16 ) );
 			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- the standard constant page-cache plugins read.
 				define( 'DONOTCACHEPAGE', true ); // The page carries this visitor's token: no page cache may serve it to others.
 			}
 		}
@@ -740,7 +744,13 @@ final class Storefront {
 	 * request are marked `speculative_load` and wait until the page is shown (send()).
 	 */
 	private static function speculative(): bool {
-		$purpose = strtolower( (string) ( $_SERVER['HTTP_SEC_PURPOSE'] ?? ( $_SERVER['HTTP_PURPOSE'] ?? '' ) ) ); // phpcs:ignore
+		$purpose = '';
+		if ( isset( $_SERVER['HTTP_SEC_PURPOSE'] ) ) {
+			$purpose = sanitize_text_field( wp_unslash( $_SERVER['HTTP_SEC_PURPOSE'] ) );
+		} elseif ( isset( $_SERVER['HTTP_PURPOSE'] ) ) {
+			$purpose = sanitize_text_field( wp_unslash( $_SERVER['HTTP_PURPOSE'] ) );
+		}
+		$purpose = strtolower( $purpose );
 		return false !== strpos( $purpose, 'prefetch' ) || false !== strpos( $purpose, 'prerender' );
 	}
 

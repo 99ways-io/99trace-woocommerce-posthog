@@ -7,10 +7,10 @@
  * The namespace and the `99hog:v1:` name scheme date from 99Trace's first name (99Hog) and never
  * change: an order sent before the rename and retried after it must keep its ID.
  *
- * @package W99\Trace
+ * @package W99Phwc
  */
 
-namespace W99\Trace;
+namespace W99Phwc;
 
 defined( 'ABSPATH' ) || exit;
 

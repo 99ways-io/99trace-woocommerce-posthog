@@ -27,7 +27,7 @@ bin/build-zip.sh                                # the zip WordPress.org receives
 - **Exactly once stays exactly once.** Never change the UUID scheme (`Uuid::event`), the anonymous-order prefix or the frozen event payloads of orders that are already queued.
 - **Stored names never change.** Options, order meta, scheduled tasks and cookies keep the `w99_phwc_` / `ph_wc_` names, so existing shops keep their data.
 - **Escape late, sanitise early, check capabilities and nonces.** Plugin Check must stay free of errors and warnings in every category.
-- **Translate every admin string** with the `99trace-posthog-for-woocommerce` text domain, with a translators' comment for each placeholder.
+- **Translate every admin string** with the `99trace-integration-with-posthog-for-woocommerce` text domain, with a translators' comment for each placeholder.
 - **No personal data in events or URLs.** E-mail addresses, order keys and postal addresses never reach PostHog except as the documented person properties.
 - **No customer data, project keys or shop names** in code, tests, fixtures or commit messages.
 - **Write for shop owners.** Settings explain what happens, in plain words, on the page itself.
