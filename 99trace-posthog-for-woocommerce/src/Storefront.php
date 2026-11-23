@@ -308,7 +308,7 @@ final class Storefront {
 		if ( is_product() ) {
 			$product = wc_get_product( get_queried_object_id() );
 			if ( $product instanceof \WC_Product ) {
-				$row = OrderData::product_fields( $product, $product->get_id(), 0 );
+				$row = OrderData::product_fields( $product, $product->get_id(), 0, OrderData::FOR_PAGE );
 				return array(
 					'type'    => 'product',
 					'product' => array_filter( $row + array( 'name' => $product->get_name(), 'price' => (float) $product->get_price(), 'product_type' => $product->get_type() ), static fn( $v ) => '' !== $v && null !== $v ),
@@ -325,7 +325,7 @@ final class Storefront {
 			$lines = array();
 			$pos   = 1;
 			foreach ( WC()->cart->get_cart() as $item ) {
-				$lines[] = OrderData::cart_line( $item, $pos++ );
+				$lines[] = OrderData::cart_line( $item, $pos++, OrderData::FOR_PAGE );
 			}
 			return array(
 				'type' => 'cart',

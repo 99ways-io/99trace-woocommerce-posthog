@@ -3,7 +3,7 @@
  * Plugin Name:          99Trace – PostHog Analytics for WooCommerce
  * Plugin URI:           https://99trace.com
  * Description:          Integrate WooCommerce with PostHog in one click. Track customer activity with unified user identities across server and client sides.
- * Version:              1.0.0
+ * Version:              1.1.0
  * Requires at least:    6.5
  * Requires PHP:         8.0
  * Requires Plugins:     woocommerce
@@ -25,7 +25,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'W99_TRACE_VERSION', '1.0.0' );
+define( 'W99_TRACE_VERSION', '1.1.0' );
 define( 'W99_TRACE_FILE', __FILE__ );
 define( 'W99_TRACE_DIR', __DIR__ );
 

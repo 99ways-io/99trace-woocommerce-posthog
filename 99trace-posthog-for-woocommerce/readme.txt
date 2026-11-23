@@ -4,7 +4,7 @@ Tags: posthog, woocommerce, analytics, server-side tracking, ab testing
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,7 +72,7 @@ Event and property names follow PostHog's ecommerce events. Amounts are numbers;
 
 **From your shop's server** to the PostHog host in the settings (`https://eu.i.posthog.com`, `https://us.i.posthog.com`, your self-hosted PostHog or your own proxy):
 
-* When an order is paid, refunded or cancelled, or its payment fails: the order's ID and number, its products (ID, SKU, name, category, price, quantity), totals, tax, shipping, discounts, coupons, currency and payment method; the buyer's PostHog visitor, device and session IDs and active feature flags as saved at checkout; the address of the checkout page and the campaign parameters it carried; the buyer's IP address and browser (user agent), unless the order has no consent or "Locate buyers by their own IP address" is off.
+* When an order is paid, refunded or cancelled, or its payment fails: the order's ID and number, its products (ID, SKU, name, price, quantity and the product's public WooCommerce data: attributes, categories, tags, brand, prices, stock status, dimensions; custom fields only if you choose so under Events), totals, tax, shipping, discounts, coupons, currency and payment method; the buyer's PostHog visitor, device and session IDs and active feature flags as saved at checkout; the address of the checkout page and the campaign parameters it carried; the buyer's IP address and browser (user agent), unless the order has no consent or "Locate buyers by their own IP address" is off.
 * When a product is added to or removed from the cart, a coupon is applied or removed, or the checkout is opened: the product or coupon and the cart's value, under the visitor's ID, with the visitor's IP address and browser.
 * With "Customer details on the person" on, and only for visitors who may be recorded: the buyer's e-mail address, first and last name and phone number, as properties of their person in PostHog.
 * Never: postal addresses, order keys, or customer details of an order counted anonymously.
@@ -152,6 +152,10 @@ Bugs and ideas: [GitHub issues](https://github.com/99ways-io/99trace-woocommerce
 
 == Changelog ==
 
+= 1.1.0 =
+* New: every product in an event carries everything WooCommerce shows about it: its attributes (such as the bundle or colour bought), the variation's own address, all categories, tags and brands, the shipping class, prices, stock status and dimensions. Fields sent before are unchanged.
+* New: Events → Product custom fields sends product custom fields too, the visible ones or all of them. Off by default; WooCommerce's own cost of goods is sent only with "all". None of it is ever printed into pages.
+
 = 1.0.0 =
 * First public release. 99Trace was piloted on live shops under the name "99Hog for WooCommerce" (0.2 to 0.6).
 * New: translation-ready (text domain `99trace-posthog-for-woocommerce`).
@@ -163,6 +167,9 @@ Bugs and ideas: [GitHub issues](https://github.com/99ways-io/99trace-woocommerce
 * Fixed: the coverage report now counts orders that a gateway marks paid without a payment date, such as cash on delivery. 99Trace already sent their purchases.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Products in events now carry their attributes, categories, prices, stock status and the rest of their public WooCommerce data. Custom fields stay off unless you choose them.
 
 = 1.0.0 =
 First public release. Coming from 99Hog for WooCommerce: activate 99Trace, then deactivate 99Hog. Settings, queued events and visitor IDs carry over.

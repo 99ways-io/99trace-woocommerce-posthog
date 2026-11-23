@@ -200,6 +200,18 @@ final class Admin {
 						),
 						'desc'    => __( 'Some checkout pages, such as FunnelKit funnels, put the product in the cart when they open. The shopper did not add it, and Checkout Started already records the visit with its products. <strong>Not sent</strong> (default): Product Added only when the shopper adds a product (a button, a link, a change on the cart or the checkout). <strong>Sent</strong>: every such page load also sends Product Added, marked <code>source: checkout_page</code>, and ad platforms fed from Product Added count it as an add to cart.', '99trace-posthog-for-woocommerce' ),
 					),
+					array(
+						'title'   => __( 'Product custom fields', '99trace-posthog-for-woocommerce' ),
+						'id'      => $p . 'product_meta',
+						'type'    => 'select',
+						'default' => 'none',
+						'options' => array(
+							'none'    => __( 'Not sent (recommended)', '99trace-posthog-for-woocommerce' ),
+							'visible' => __( 'Visible custom fields', '99trace-posthog-for-woocommerce' ),
+							'all'     => __( 'All custom fields, including hidden ones', '99trace-posthog-for-woocommerce' ),
+						),
+						'desc'    => __( 'Every product in an event carries everything WooCommerce shows about it: its attributes (such as the bundle or the colour chosen), categories, tags, brand, prices, stock status, dimensions and shipping class. Custom fields are extra data other plugins and themes save on a product; some of it is internal, such as a purchase cost or a supplier code. <strong>Not sent</strong> (default): none of it. <strong>Visible</strong>: the fields WordPress shows in the product editor\'s Custom Fields box (names not starting with an underscore). <strong>All</strong>: hidden fields too, and WooCommerce\'s own cost of goods. Values longer than 500 characters are cut. Custom fields go only into events the shop\'s server sends, never into the page.', '99trace-posthog-for-woocommerce' ),
+					),
 					$end( 'events' ),
 				);
 

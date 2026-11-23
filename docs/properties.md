@@ -13,7 +13,7 @@ Rule: a property is sent only when its source is known. Names stay those of the 
 | `total`, `subtotal`, `shipping`, `tax`, `discount`, `coupon`, `currency` | WooCommerce order | as before; numbers, major units |
 | `revenue` | order total (amount charged) | **as before** (the previous plugin sends the total); kept so revenue charts and experiment metrics stay comparable |
 | `net_revenue` | subtotal − discounts | new: merchandise after discounts, excl. tax and shipping |
-| `products[]` | order lines | as before: `product_id` (parent), `variant` (variation ID), `sku`, `category`, `name`, `price`, `quantity`, `position`, `url`, `image_url`; new `variant_name`, `line_total`. `price` is the unit price paid before cart discounts (the previous plugin sent the product's catalogue price at that moment) |
+| `products[]` | order lines | as before: `product_id` (parent), `variant` (variation ID), `sku`, `category`, `name`, `price`, `quantity`, `position`, `url`, `image_url`; new `variant_name`, `line_total`. `price` is the unit price paid before cart discounts (the previous plugin sent the product's catalogue price at that moment). Since 1.1.0 each line also carries the product's public WooCommerce data: see [product properties](#product-properties-110) |
 | `products_string` | order lines | as before (`|SKU|SKU|`) |
 | `quantity` | order lines | new: units |
 | `payment_method`, `payment_method_title` | order | new |
@@ -49,6 +49,28 @@ Rule: a property is sent only when its source is known. Names stay those of the 
 - `Product Viewed` (`product_id`, `sku`, `name`, `category`, `price`, `currency`, `url`, `image_url`, `product_type`): replaces the previous plugin's `Product List Viewed` on product pages.
 - `Order Confirmation Viewed` (`order_id`, `return_context` = `same_browser` / `new_browser_continued` / `known_browser_alias_sent` / `identified_browser_not_joined` / `not_linked`, `link_reason`): new.
 - Every browser event passes `before_send`, which removes order keys, e-mail addresses and the configured URL parameters from every string at any depth (URLs, web vitals, heatmap keys, autocapture's element chain). On order-received, order-pay and account pages autocapture records no element text or attributes, and replay and heatmaps are off.
+
+## Product properties (1.1.0)
+
+Every product in `products[]` (purchases, refunds, failed payments, Checkout Started, Cart Viewed) and every product event (`Product Added`, `Product Removed`, `Product Viewed`) carries, besides the fields above, everything WooCommerce shows about the product. Fields already listed keep their names and values; nothing below overwrites them.
+
+| Property | Content |
+| --- | --- |
+| `product_type` | `simple`, `variable`, `variation`, `grouped`, `external` or a plugin's type |
+| `parent_name`, `parent_sku` | for a variation: the product it belongs to |
+| `variant_url` | for a variation: its own address with its attributes in the query (`?attribute_pa_bundle=2-x-product`), as the previous plugin's `url` |
+| `attributes` | attribute name → value as shoppers see it: the variation's choices first (`{"pa_bundle": "2 x Product"}`), then the product's other visible attributes (options comma-separated). Global attributes are keyed `pa_<slug>`, custom ones by their sanitized name. Hidden attributes that vary nothing are left out |
+| `categories`, `tags`, `brands` | all term names (`category` stays the first category) |
+| `shipping_class` | the shipping class name |
+| `on_sale` | whether the sale price applies now |
+| WooCommerce product data | every other field of `WC_Product::get_data()`, read as the shop shows it (a variation inherits what it does not set): `slug`, `status`, `featured`, `catalog_visibility`, `global_unique_id` (GTIN, EAN …), `regular_price`, `sale_price` (numbers), `date_on_sale_from`/`_to`, `date_created`, `date_modified` (UTC), `total_sales`, `tax_status`, `tax_class`, `manage_stock`, `stock_quantity`, `stock_status`, `backorders`, `low_stock_amount`, `sold_individually`, `weight`, `length`, `width`, `height` (numbers), `upsell_ids`, `cross_sell_ids`, `reviews_allowed`, `menu_order`, `virtual`, `downloadable`, `download_limit`, `download_expiry`, `rating_counts`, `average_rating`, `review_count`. Empty fields are left out |
+| `custom_fields` | product custom fields (meta), only with Events → Product custom fields set to *visible* (keys without a leading underscore) or *all*; WooCommerce's own cost-of-goods fields (`cogs_*`, a purchase cost) are left out of the WooCommerce data above unless it is *all*; a variation's own fields win over its parent's; at most 100, values cut at 500 characters; lists and objects as JSON when they fit |
+
+Never sent: descriptions, the purchase note, download file links, the post password, term and image IDs.
+
+Data printed into a page for the browser module (`Product Viewed`, `Cart Viewed`) is the same for every visitor and visible in the page source, so it never carries `custom_fields`, cost of goods (`cogs_*`), `total_sales`, `stock_quantity` or `low_stock_amount`.
+
+Developers can change the set with the `w99_phwc_product_properties` filter (see [developers](developers.md#filters)).
 
 ## Deliberate differences from the previous plugin
 

@@ -42,6 +42,7 @@ final class Settings {
 		'record_editors'       => 'no',             // signed-in users who can edit pages but not manage orders
 		'record_previews'      => 'no',             // page-builder and preview loads (Elementor, FunnelKit, WordPress, Customizer)
 		'cart_checkout_fill'   => 'no',             // Product Added for a cart the checkout page fills while it loads
+		'product_meta'         => 'none',           // product custom fields in server events: none | visible | all (1.1.0)
 		'ev_checkout'          => 'yes',
 		'ev_order'             => 'yes',
 		'ev_refund'            => 'yes',

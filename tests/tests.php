@@ -1602,6 +1602,147 @@ try {
 	check( 'coverage report: ran without error', false, get_class( $e ) . ': ' . $e->getMessage() . ' at ' . basename( $e->getFile() ) . ':' . $e->getLine() );
 }
 
+// 1.1.0: every public WooCommerce product property in products[] and product events; custom fields only when chosen,
+// and never in data printed into pages.
+try {
+	set_opt( 'unconsented_orders', 'anonymous' );
+	// A global attribute "Bundle" with its terms, as shops sell bundles.
+	$attr_id = wc_attribute_taxonomy_id_by_name( 'bundle' );
+	if ( ! $attr_id ) {
+		$attr_id = wc_create_attribute( [ 'name' => 'Bundle', 'slug' => 'bundle', 'type' => 'select' ] );
+	}
+	if ( ! taxonomy_exists( 'pa_bundle' ) ) {
+		register_taxonomy( 'pa_bundle', 'product', [ 'hierarchical' => false ] );
+	}
+	$t1 = wp_insert_term( '1 x Product', 'pa_bundle', [ 'slug' => '1-x-product' ] );
+	$t2 = wp_insert_term( '2 x Product', 'pa_bundle', [ 'slug' => '2-x-product' ] );
+	$cat_a = wp_insert_term( 'Gadgets', 'product_cat' );
+	$cat_b = wp_insert_term( 'Car accessories', 'product_cat' );
+	$tag   = wp_insert_term( 'Bestseller', 'product_tag' );
+	$ship  = wp_insert_term( 'Small parcel', 'product_shipping_class', [ 'slug' => 'small-parcel' ] );
+
+	$bundle = new WC_Product_Attribute();
+	$bundle->set_id( (int) $attr_id );
+	$bundle->set_name( 'pa_bundle' );
+	$bundle->set_options( [ (int) $t1['term_id'], (int) $t2['term_id'] ] );
+	$bundle->set_visible( true );
+	$bundle->set_variation( true );
+	$material = new WC_Product_Attribute();
+	$material->set_name( 'Material' );
+	$material->set_options( [ 'Steel' ] );
+	$material->set_visible( true );
+	$material->set_variation( false );
+	$hidden = new WC_Product_Attribute();
+	$hidden->set_name( 'Internal code' );
+	$hidden->set_options( [ 'X-99' ] );
+	$hidden->set_visible( false );
+	$hidden->set_variation( false );
+
+	$vp = new WC_Product_Variable();
+	$vp->set_name( 'Bundle product' );
+	$vp->set_sku( 'BP' );
+	$vp->set_description( str_repeat( 'Long description. ', 200 ) );
+	$vp->set_attributes( [ $bundle, $material, $hidden ] );
+	$vp->set_category_ids( [ (int) $cat_a['term_id'], (int) $cat_b['term_id'] ] );
+	$vp->set_tag_ids( [ (int) $tag['term_id'] ] );
+	$vp->set_shipping_class_id( (int) $ship['term_id'] );
+	$vp->set_weight( '0.25' );
+	$vp->update_meta_data( 'material_note', 'brushed steel' );
+	$vp->update_meta_data( '_purchase_cost', '12.50' );
+	$vp->save();
+	wp_set_object_terms( $vp->get_id(), [ (int) $t1['term_id'], (int) $t2['term_id'] ], 'pa_bundle' );
+	$var = new WC_Product_Variation();
+	$var->set_parent_id( $vp->get_id() );
+	$var->set_attributes( [ 'pa_bundle' => '2-x-product' ] );
+	$var->set_regular_price( '59.94' );
+	$var->set_sale_price( '49.95' );
+	$var->set_sku( 'BP-2' );
+	$var->set_manage_stock( true );
+	$var->set_stock_quantity( 40 );
+	$var->update_meta_data( '_variation_cost', '20.00' );
+	$var->save();
+	$var = wc_get_product( $var->get_id() );
+
+	$before_o = count_of( 'Order Completed' );
+	$vo       = checkout( $var );
+	$vo->payment_complete( 'tr_pp1' );
+	run_pending( 5, 3600 );
+	$ev   = last_event( 'Order Completed' );
+	$line = $ev['properties']['products'][0] ?? [];
+	check( 'product properties: purchase sent with the variation line', $before_o + 1 === count_of( 'Order Completed' ) && (string) $vo->get_id() === ( $ev['properties']['order_id'] ?? '' ) && (string) $var->get_id() === ( $line['variant'] ?? '' ) );
+	check(
+		'product properties: fields sent before 1.1.0 keep their names and values',
+		(string) $vp->get_id() === ( $line['product_id'] ?? '' ) && 'BP-2' === ( $line['sku'] ?? '' ) && '' !== ( $line['category'] ?? '' ) && ( $line['categories'][0] ?? null ) === $line['category'] && 1 === ( $line['quantity'] ?? 0 ) && 1 === ( $line['position'] ?? 0 )
+			&& 49.95 === (float) ( $line['price'] ?? 0 ) && get_permalink( $vp->get_id() ) === ( $line['url'] ?? '' ) && '2 x Product' === ( $line['variant_name'] ?? '' ),
+		wp_json_encode( array_intersect_key( $line, array_flip( [ 'product_id', 'sku', 'category', 'quantity', 'position', 'price', 'url', 'variant_name' ] ) ) )
+	);
+	$attrs = $line['attributes'] ?? [];
+	check(
+		'product properties: attributes by name (the variation\'s bundle, the visible custom attribute; never the hidden one)',
+		'2 x Product' === ( $attrs['pa_bundle'] ?? '' ) && 'Steel' === ( $attrs['material'] ?? '' ) && ! isset( $attrs['internal-code'] ),
+		wp_json_encode( $attrs )
+	);
+	check( 'product properties: the variation\'s own address carries its attributes, as the previous plugin\'s url did', false !== strpos( (string) ( $line['variant_url'] ?? '' ), 'attribute_pa_bundle=2-x-product' ), (string) ( $line['variant_url'] ?? '' ) );
+	check(
+		'product properties: WooCommerce data, names for terms, variation inheriting the parent',
+		'variation' === ( $line['product_type'] ?? '' ) && 'Bundle product' === ( $line['parent_name'] ?? '' ) && 'BP' === ( $line['parent_sku'] ?? '' )
+			&& [ 'Car accessories', 'Gadgets' ] === array_values( array_intersect( [ 'Car accessories', 'Gadgets' ], (array) ( $line['categories'] ?? [] ) ) ) && [ 'Bestseller' ] === ( $line['tags'] ?? [] )
+			&& 'Small parcel' === ( $line['shipping_class'] ?? '' ) && 59.94 === ( $line['regular_price'] ?? null ) && 49.95 === ( $line['sale_price'] ?? null ) && true === ( $line['on_sale'] ?? null )
+			&& 0.25 === ( $line['weight'] ?? null ) && is_int( $line['stock_quantity'] ?? null ) && $line['stock_quantity'] >= 38 && $line['stock_quantity'] <= 40 && 'instock' === ( $line['stock_status'] ?? '' ) && 1 === preg_match( '/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/', (string) ( $line['date_created'] ?? '' ) ),
+		wp_json_encode( array_intersect_key( $line, array_flip( [ 'product_type', 'parent_name', 'parent_sku', 'categories', 'tags', 'shipping_class', 'regular_price', 'sale_price', 'on_sale', 'weight', 'stock_quantity', 'stock_status', 'date_created' ] ) ) )
+	);
+	check(
+		'product properties: no descriptions, downloads, password, raw meta or custom fields by default',
+		! array_intersect_key( $line, array_flip( [ 'description', 'short_description', 'purchase_note', 'downloads', 'post_password', 'meta_data', 'custom_fields', 'image_id', 'category_ids' ] ) ),
+		implode( ',', array_keys( $line ) )
+	);
+	check( 'product properties: WooCommerce\'s cost of goods (cogs_*) is internal, not sent by default', ! preg_grep( '/^cogs_/', array_keys( $line ) ), implode( ',', preg_grep( '/^cogs_/', array_keys( $line ) ) ) );
+	$size = strlen( (string) wp_json_encode( $line ) );
+	check( 'product properties: a product line stays small (under 4 KB)', $size < 4096, $size . ' bytes' );
+
+	set_opt( 'product_meta', 'visible' );
+	$vo2 = checkout( $var );
+	$vo2->payment_complete( 'tr_pp2' );
+	run_pending( 5, 3600 );
+	$cf = last_event( 'Order Completed' )['properties']['products'][0]['custom_fields'] ?? [];
+	check( 'custom fields "visible": the visible field, no hidden ones', 'brushed steel' === ( $cf['material_note'] ?? '' ) && ! isset( $cf['_purchase_cost'] ) && ! isset( $cf['_variation_cost'] ), wp_json_encode( $cf ) );
+
+	set_opt( 'product_meta', 'all' );
+	$vo3 = checkout( $var );
+	$vo3->payment_complete( 'tr_pp3' );
+	run_pending( 5, 3600 );
+	$cf = last_event( 'Order Completed' )['properties']['products'][0]['custom_fields'] ?? [];
+	check( 'custom fields "all": hidden fields of the variation and its parent too', '12.50' === ( $cf['_purchase_cost'] ?? '' ) && '20.00' === ( $cf['_variation_cost'] ?? '' ) && 'brushed steel' === ( $cf['material_note'] ?? '' ), wp_json_encode( $cf ) );
+	$all_line = last_event( 'Order Completed' )['properties']['products'][0] ?? [];
+	check( 'custom fields "all": WooCommerce\'s cost of goods fields come with it', ! method_exists( $var, 'get_cogs_value_is_additive' ) || array_key_exists( 'cogs_value_is_additive', $all_line ), implode( ',', preg_grep( '/^cogs_/', array_keys( $all_line ) ) ) );
+
+	$page = \W99\Trace\OrderData::product_fields( $var, $vp->get_id(), $var->get_id(), \W99\Trace\OrderData::FOR_PAGE );
+	check( 'page data (printed for every visitor): attributes yes; custom fields, sales count and stock numbers never, even with "all"', '2 x Product' === ( $page['attributes']['pa_bundle'] ?? '' ) && ! array_intersect_key( $page, array_flip( [ 'custom_fields', 'total_sales', 'stock_quantity', 'low_stock_amount' ] ) ) && ! preg_grep( '/^cogs_/', array_keys( $page ) ), implode( ',', array_keys( $page ) ) );
+
+	// Product Added for the variation: the same properties at the top level, without changing the event's own fields.
+	$_COOKIE  = [ $cookie_name => $cookie_json ];
+	$before_a = count_of( 'Product Added' );
+	WC()->cart->empty_cart();
+	WC()->cart->add_to_cart( $vp->get_id(), 2, $var->get_id(), [ 'attribute_pa_bundle' => '2-x-product' ] );
+	run_pending( 1, 60 );
+	$a = last_event( 'Product Added' );
+	$ap = $a['properties'] ?? [];
+	check(
+		'Product Added: product properties added, its own fields unchanged (quantity, price, value, source)',
+		$before_a + 1 === count_of( 'Product Added' ) && 2 === ( $ap['quantity'] ?? 0 ) && 49.95 === (float) ( $ap['price'] ?? 0 ) && 99.9 === (float) ( $ap['value'] ?? 0 )
+			&& '2 x Product' === ( $ap['attributes']['pa_bundle'] ?? '' ) && 'variation' === ( $ap['product_type'] ?? '' ) && isset( $ap['source'] ) && isset( $ap['custom_fields']['_purchase_cost'] ),
+		wp_json_encode( array_intersect_key( $ap, array_flip( [ 'quantity', 'price', 'value', 'source', 'product_type' ] ) ) )
+	);
+	WC()->cart->empty_cart();
+	$_COOKIE = [];
+	delete_option( 'w99_phwc_product_meta' );
+	\W99\Trace\Settings::flush();
+	check( 'custom fields: off by default', 'none' === \W99\Trace\Settings::get( 'product_meta' ) && [] === \W99\Trace\OrderData::custom_fields( $var, $vp ) );
+	set_opt( 'unconsented_orders', 'skip' );
+} catch ( \Throwable $e ) {
+	check( 'product properties: ran without error', false, get_class( $e ) . ': ' . $e->getMessage() . ' at ' . basename( $e->getFile() ) . ':' . $e->getLine() );
+}
+
 global $wpdb;
 check( 'orders stored in HPOS tables with frozen identity', (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}wc_orders_meta WHERE meta_key = '_99w_ph_identity'" ) >= 10 );
 

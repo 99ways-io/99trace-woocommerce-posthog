@@ -2,6 +2,13 @@
 
 All notable changes to 99Trace. Versions follow [semantic versioning](https://semver.org); the WordPress.org readme carries the same entries for users.
 
+## 1.1.0 – 2026-11-18
+
+### Added
+- Every product in an event now carries everything WooCommerce shows about it: its attributes by name (`attributes`, such as the bundle or colour bought), the variation's own address with its attributes (`variant_url`), the parent's name and SKU, all categories, tags and brands, the shipping class, and WooCommerce's product data (type, prices, sale, stock status, dimensions, tax, visibility, dates, ratings). This applies to `products[]` in purchases, refunds, failed payments, Checkout Started and Cart Viewed, and to Product Added, Product Removed and Product Viewed. Fields sent before keep their names and values. See `docs/properties.md`.
+- Events → Product custom fields: send product custom fields (meta) too, the visible ones or all of them. Off by default, because some of them are internal (purchase cost, supplier codes). WooCommerce's own cost-of-goods fields count as internal and come only with "all". Custom fields, cost of goods, sales counts and stock numbers never go into data printed into pages.
+- Filter `w99_phwc_product_properties`.
+
 ## 1.0.0 – 2026-11-17
 
 First public release. 99Trace was piloted on live shops under the name **99Hog for WooCommerce** (0.2 to 0.6); this release renames it and prepares it for the WordPress.org plugin directory.
