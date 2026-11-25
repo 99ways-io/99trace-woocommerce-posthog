@@ -95,8 +95,8 @@ def banner(w=1544, h=500):
             '{mark}{t1}{t2}{j}</svg>\n').format(
         w=w, h=h, bg=GRAPHITE,
         mark=mark(96 * s, 112 * s, 500 * s),
-        t1=text(98 * s, 300 * s, 41 * s, WARM, 'Every WooCommerce order in PostHog.', weight=600, spacing=-0.4 * s),
-        t2=text(98 * s, 352 * s, 33 * s, MUTED_D, 'Exactly once, on the visitor who placed it.', weight=400, spacing=-0.2 * s),
+        t1=text(98 * s, 300 * s, 41 * s, WARM, 'Every WooCommerce event in PostHog.', weight=600, spacing=-0.4 * s),
+        t2=text(98 * s, 352 * s, 33 * s, MUTED_D, 'Orders, refunds, carts and checkouts.', weight=400, spacing=-0.2 * s),
         j=journey_vertical(1080 * s, 104 * s, 352 * s, scale=s))
 
 
@@ -107,8 +107,8 @@ def social(w=1280, h=640):
             '{mark}{t1}{t2}{j}{foot}</svg>\n').format(
         w=w, h=h, bg=GRAPHITE,
         mark=mark(96 * s, 104 * s, 560 * s),
-        t1=text(98 * s, 300 * s, 46 * s, WARM, 'Every WooCommerce order in PostHog.', weight=600, spacing=-0.5 * s),
-        t2=text(98 * s, 356 * s, 34 * s, MUTED_D, 'Exactly once, on the visitor who placed it.', weight=400, spacing=-0.2 * s),
+        t1=text(98 * s, 300 * s, 46 * s, WARM, 'Every WooCommerce event in PostHog.', weight=600, spacing=-0.5 * s),
+        t2=text(98 * s, 356 * s, 34 * s, MUTED_D, 'Orders, refunds, carts and checkouts.', weight=400, spacing=-0.2 * s),
         j=journey(196 * s, 466 * s, 1166 * s, scale=s, label_size=23, end_size=25, sub_size=21),
         foot=text(98 * s, 604 * s, 20 * s, '#8C908A', 'Open source  ·  GPL-2.0-or-later  ·  by 99Ways', family='IBM Plex Mono', weight=400))
 

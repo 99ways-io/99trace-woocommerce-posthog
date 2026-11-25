@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-<p align="center"><strong>Every WooCommerce order in PostHog, exactly once, on the visitor who placed it.</strong></p>
+<p align="center"><strong>Every WooCommerce event in PostHog.</strong><br>Orders, refunds, carts and checkouts, sent from your shop's server on the visitor who made them.</p>
 
 <p align="center">
   <a href="https://github.com/99ways-io/99trace-woocommerce-posthog/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/99ways-io/99trace-woocommerce-posthog/actions/workflows/ci.yml/badge.svg"></a>
